@@ -22,6 +22,7 @@ class mainTableViewController: UITableViewController{
         // self.navigationItem.rightBarButtonItem = self.editButtonItem()
         
         tempratureLabel.text = "29??"
+        loadWeather(city: "北京")
         
         tableView.estimatedRowHeight = UIScreen.main.bounds.size.height
     }
