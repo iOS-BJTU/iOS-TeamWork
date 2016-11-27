@@ -7,6 +7,8 @@
 //
 
 import UIKit
+import SwiftyJSON
+import Charts
 
 class mainTableViewController: UITableViewController{
     @IBOutlet weak var tempratureLabel: UILabel!
@@ -27,6 +29,36 @@ class mainTableViewController: UITableViewController{
     override func didReceiveMemoryWarning() {
         super.didReceiveMemoryWarning()
         // Dispose of any resources that can be recreated.
+    }
+    
+    func loadWeather(city: String){
+        let cityname = city.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed)!
+        
+        let str = "https://api.thinkpage.cn/v3/weather/now.json?key=stgqeqzd7smkfdzn&location=\(cityname)&language=zh-Hans&unit=c"
+        let str2 = "https://api.thinkpage.cn/v3/weather/hourly.json?key=stgqeqzd7smkfdzn&location=\(cityname)&language=zh-Hans&unit=c&start=0&hours=24"
+        let url = URL(string: str)
+        let url2 = URL(string: str2)
+        do{
+            let jsondata = try NSData(contentsOf: url!, options: NSData.ReadingOptions.uncached)
+            let jsondate2 = try NSData(contentsOf: url2!, options: NSData.ReadingOptions.uncached)
+            let json = JSON(data: jsondata as Data)
+            let josn2 = JSON(data: jsondate2 as Data)
+            if let temp = json["results"][0]["now"].rawString() {
+                // 找到电话号码
+                print(temp)
+            }else {
+                // 打印错误信息
+                print("www")
+            }
+            print("next")
+            if let temp2 = josn2["results"][0]["hourly"][0].rawString() {
+                // 找到电话号码
+                print(temp2)
+            }else {
+                // 打印错误信息
+                print("www")
+            }
+        }catch{}
     }
 
     
