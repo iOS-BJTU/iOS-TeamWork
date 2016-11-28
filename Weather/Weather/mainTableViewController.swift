@@ -11,7 +11,9 @@ import SwiftyJSON
 import Charts
 
 class mainTableViewController: UITableViewController{
+    @IBOutlet weak var lineChartView: LineChartView!
     @IBOutlet weak var tempratureLabel: UILabel!
+    var hours = [String]()
     override func viewDidLoad() {
         super.viewDidLoad()
 
@@ -20,6 +22,11 @@ class mainTableViewController: UITableViewController{
 
         // Uncomment the following line to display an Edit button in the navigation bar for this view controller.
         // self.navigationItem.rightBarButtonItem = self.editButtonItem()
+        for i in 1..<8 {
+            hours += ["\(i)时"]
+        }
+        let wendu = [-1,-2,-3,-4,-1,-2,-3]
+        setChart(dataPoints: hours, values: wendu)
         
         tempratureLabel.text = "29??"
         loadWeather(city: "北京")
@@ -32,6 +39,58 @@ class mainTableViewController: UITableViewController{
         // Dispose of any resources that can be recreated.
     }
     
+    func setChart(dataPoints: [String], values: [Int]) {
+        var dataEntries: [ChartDataEntry] = []
+        for i in 0..<dataPoints.count {
+            let dataEntry = ChartDataEntry(x: Double(i), y: Double(values[i]))
+            dataEntries.append(dataEntry)
+        }
+        let chartDataSet = LineChartDataSet(values:dataEntries, label: nil)
+        let chartData = LineChartData(dataSet: chartDataSet)
+        lineChartView.data = chartData
+        // 自定义颜色
+        
+        chartDataSet.drawCirclesEnabled = true//画外环
+        
+        chartDataSet.drawCircleHoleEnabled = false //不画内环
+        
+        chartDataSet.circleRadius = 2//外环直径像素
+        
+        //chartDataSet.circleHoleRadius = 2//内环直径
+        
+        chartDataSet.setCircleColor(UIColor.red)//环的颜色设置
+        
+        chartDataSet.valueTextColor = .red //环上字体颜色
+        
+        chartDataSet.drawValuesEnabled = true //展示环上的值
+        
+        chartDataSet.mode = LineChartDataSet.Mode.cubicBezier
+        
+        lineChartView.leftAxis.drawGridLinesEnabled = false //多个横轴
+        
+        lineChartView.rightAxis.drawGridLinesEnabled = false //多个横轴(left, right同时false才能不展示横轴)
+        lineChartView.rightAxis.drawAxisLineEnabled = false //不展示右侧Y轴
+        
+        lineChartView.leftAxis.drawAxisLineEnabled = false
+        
+        lineChartView.xAxis.drawGridLinesEnabled = false //多个纵轴
+        
+        lineChartView.xAxis.drawAxisLineEnabled = false
+        
+        lineChartView.xAxis.valueFormatter = IndexAxisValueFormatter(values: dataPoints)
+        
+        ///lineChartView.xAxis.granularity = 1.0
+        
+        lineChartView.xAxis.labelPosition = .bottom //只显示底部的X轴
+        
+        lineChartView.rightAxis.enabled = false //不展示右侧Y轴数据
+        
+        lineChartView.leftAxis.enabled = false
+        
+        lineChartView.chartDescription?.text = ""
+        
+    }
+
     func loadWeather(city: String){
         let cityname = city.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed)!
         
