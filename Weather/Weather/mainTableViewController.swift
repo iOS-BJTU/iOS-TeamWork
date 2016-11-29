@@ -12,7 +12,19 @@ import Charts
 
 class mainTableViewController: UITableViewController{
     @IBOutlet weak var lineChartView: LineChartView!
+    @IBOutlet weak var hourScrollView: UIScrollView!
     @IBOutlet weak var tempratureLabel: UILabel!
+    @IBOutlet weak var nowTextLabel: UILabel!
+    @IBOutlet weak var nowTempratureLabel: UILabel!
+    @IBOutlet weak var windScaleLabel: UILabel!
+    @IBOutlet weak var humidityLabel: UILabel!
+    @IBOutlet weak var weatherImage: UIImageView!
+    @IBOutlet weak var nowAirLabel: UILabel!
+    @IBOutlet weak var airLevelLabel: UILabel!
+    @IBOutlet weak var airImage: UIImageView!
+    
+
+    var cityName = "北京"
     var hours = [String]()
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -28,10 +40,27 @@ class mainTableViewController: UITableViewController{
         let wendu = [-1,-2,-3,-4,-1,-2,-3]
         setChart(dataPoints: hours, values: wendu)
         
-        tempratureLabel.text = "29??"
         loadWeather(city: "北京")
         
-        tableView.estimatedRowHeight = UIScreen.main.bounds.size.height
+        // 计算屏幕长宽
+        let screenWidth = UIScreen.main.bounds.size.width
+        let screenHeight = UIScreen.main.bounds.size.height        
+        
+        self.edgesForExtendedLayout = .bottom
+        
+        tableView.estimatedRowHeight = screenHeight
+
+        //下拉刷新
+        automaticallyAdjustsScrollViewInsets = false
+        tableView.addExRefresh {
+            self.perform(#selector(self.afterMethod), with: nil, afterDelay: 3, inModes: [RunLoopMode.commonModes])
+        }
+        
+    }
+    
+    func afterMethod() {
+//        self.navigationItem.title = "刷新成功"
+        tableView.header?.endRefresh()
     }
 
     override func didReceiveMemoryWarning() {
@@ -40,6 +69,7 @@ class mainTableViewController: UITableViewController{
     }
     
     func setChart(dataPoints: [String], values: [Int]) {
+        
         var dataEntries: [ChartDataEntry] = []
         for i in 0..<dataPoints.count {
             let dataEntry = ChartDataEntry(x: Double(i), y: Double(values[i]))
@@ -49,6 +79,7 @@ class mainTableViewController: UITableViewController{
         let chartData = LineChartData(dataSet: chartDataSet)
         lineChartView.data = chartData
         // 自定义颜色
+        lineChartView.backgroundColor = .clear
         
         chartDataSet.drawCirclesEnabled = true//画外环
         
@@ -58,9 +89,9 @@ class mainTableViewController: UITableViewController{
         
         //chartDataSet.circleHoleRadius = 2//内环直径
         
-        chartDataSet.setCircleColor(UIColor.red)//环的颜色设置
+        chartDataSet.setCircleColor(UIColor.white)//环的颜色设置
         
-        chartDataSet.valueTextColor = .red //环上字体颜色
+        chartDataSet.valueTextColor = .white //环上字体颜色
         
         chartDataSet.drawValuesEnabled = true //展示环上的值
         
@@ -89,37 +120,174 @@ class mainTableViewController: UITableViewController{
         
         lineChartView.chartDescription?.text = ""
         
+        lineChartView.xAxis.labelTextColor = .white
+        lineChartView.legend.formSize = 0
+        
     }
 
     func loadWeather(city: String){
         let cityname = city.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed)!
         
-        let str = "https://api.thinkpage.cn/v3/weather/now.json?key=stgqeqzd7smkfdzn&location=\(cityname)&language=zh-Hans&unit=c"
-        let str2 = "https://api.thinkpage.cn/v3/weather/hourly.json?key=stgqeqzd7smkfdzn&location=\(cityname)&language=zh-Hans&unit=c&start=0&hours=24"
-        let url = URL(string: str)
-        let url2 = URL(string: str2)
+        let nowStr = "https://api.thinkpage.cn/v3/weather/now.json?key=stgqeqzd7smkfdzn&location=\(cityname)&language=zh-Hans&unit=c"
+        let hourStr = "https://api.thinkpage.cn/v3/weather/hourly.json?key=stgqeqzd7smkfdzn&location=\(cityname)&language=zh-Hans&unit=c&start=0&hours=24"
+        let airStr = "https://api.thinkpage.cn/v3/air/now.json?key=stgqeqzd7smkfdzn&location=beijing&language=zh-Hans&scope=city"
+        let dailyStr = "https://api.thinkpage.cn/v3/weather/daily.json?key=stgqeqzd7smkfdzn&location=beijing&language=zh-Hans&unit=c&start=0&days=5"
+        let lifeStr = "https://api.thinkpage.cn/v3/life/suggestion.json?key=stgqeqzd7smkfdzn&location=shanghai&language=zh-Hans"
+        
+        let nowUrl = URL(string: nowStr)
+        let hourUrl = URL(string: hourStr)
+        let airUrl = URL(string: airStr)
+        let dailyUrl = URL(string: dailyStr)
+        let lifeUrl = URL(string: lifeStr)
+        
         do{
-            let jsondata = try NSData(contentsOf: url!, options: NSData.ReadingOptions.uncached)
-            let jsondate2 = try NSData(contentsOf: url2!, options: NSData.ReadingOptions.uncached)
-            let json = JSON(data: jsondata as Data)
-            let josn2 = JSON(data: jsondate2 as Data)
-            if let temp = json["results"][0]["now"].rawString() {
-                // 找到电话号码
-                print(temp)
+            let nowJsonData = try NSData(contentsOf: nowUrl!, options: NSData.ReadingOptions.uncached)
+            let hourJsonDate = try NSData(contentsOf: hourUrl!, options: NSData.ReadingOptions.uncached)
+            let airJsonData = try NSData(contentsOf: airUrl!, options: NSData.ReadingOptions.uncached)
+            let dailyJsonData = try NSData(contentsOf: dailyUrl!, options: NSData.ReadingOptions.uncached)
+            let lifeJsonData = try NSData(contentsOf: lifeUrl!, options: NSData.ReadingOptions.uncached)
+            let nowJson = JSON(data: nowJsonData as Data)
+            let hourJson = JSON(data: hourJsonDate as Data)
+            let airJson = JSON(data: airJsonData as Data)
+            let dailyJson = JSON(data: dailyJsonData as Data)
+            let lifeJson = JSON(data: lifeJsonData as Data)
+            if let temp = nowJson["results"][0]["now"].rawString() {
+                // 当前天气实况
+                print("temp=" + temp)
+                self.setMainData(weatherJson: nowJson)
             }else {
                 // 打印错误信息
                 print("www")
             }
             print("next")
-            if let temp2 = josn2["results"][0]["hourly"][0].rawString() {
-                // 找到电话号码
+            if let temp2 = hourJson["results"][0]["hourly"][0].rawString() {
+                // 24小时天气
+                self.createHourWeatherView(hourJson: hourJson)
                 print(temp2)
+            }else {
+                // 打印错误信息
+                print("www")
+            }
+            print("next2")
+            if let temp3 = airJson["results"][0]["air"].rawString() {
+                // 空气质量
+                print(temp3)
+                self.setAirData(airJson: airJson)
+            }else {
+                // 打印错误信息
+                print("www")
+            }
+            print("next3")
+            if let temp4 = dailyJson["results"][0]["daily"][0].rawString() {
+                // 逐日天气
+                setDailyWeatherData(dailyJson: dailyJson)
+                print(temp4)
+            }else {
+                // 打印错误信息
+                print("www")
+            }
+            print("next4")
+            if let temp5 = lifeJson["results"][0]["suggestion"].rawString() {
+                // 逐日天气
+//                setLifeData(lifeJson: lifeJson)
+                print(temp5)
             }else {
                 // 打印错误信息
                 print("www")
             }
         }catch{}
     }
+    
+    
+    func setMainData (weatherJson : JSON) {
+        tempratureLabel.text = NSString.init(format: "%@°C", weatherJson["results"][0]["now"]["temperature"].rawString()!) as String
+        nowTextLabel.text = weatherJson["results"][0]["now"]["text"].rawString()
+        windScaleLabel.text = weatherJson["results"][0]["now"]["wind_scale"].rawString()
+        humidityLabel.text = weatherJson["results"][0]["now"]["humidity"].rawString()
+        weatherImage.image = UIImage.init(named: weatherJson["results"][0]["now"]["code"].rawString()!)
+
+    }
+    
+    func setAirData (airJson : JSON) {
+        let pm25 = airJson["results"][0]["air"]["city"]["pm25"].rawString()
+        let quality = airJson["results"][0]["air"]["city"]["quality"].rawString()
+        nowAirLabel.text = pm25! + " " + quality!
+        let level = Int(pm25!)
+        var levelStr = "空气"
+        if level! < 50{
+            levelStr += "优 " + pm25!
+            airImage.image = UIImage.init(named: "colorBar1")
+            airLevelLabel.textColor = UIColor(red: 131/255, green: 192/255, blue: 92/255, alpha: 1.0)
+        }else if level! >= 50, level! < 100 {
+            levelStr += "优 " + pm25!
+            airImage.image = UIImage.init(named: "colorBar2")
+            airLevelLabel.textColor = UIColor(red: 232/255, green: 190/255, blue: 81/255, alpha: 1.0)
+        }else if level! >= 100, level! < 150 {
+            levelStr += "良 " + pm25!
+            airImage.image = UIImage.init(named: "colorBar3")
+            airLevelLabel.textColor = UIColor(red: 236/255, green: 159/255, blue: 98/255, alpha: 1.0)
+        }else if level! >= 150, level! < 200 {
+            levelStr += "良 " + pm25!
+            airImage.image = UIImage.init(named: "colorBar4")
+            airLevelLabel.textColor = UIColor(red: 222/255, green: 125/255, blue: 87/255, alpha: 1.0)
+        }else if level! >= 200, level! < 300 {
+            levelStr += "差 " + pm25!
+            airImage.image = UIImage.init(named: "colorBar5")
+            airLevelLabel.textColor = UIColor(red: 156/255, green: 70/255, blue: 89/255, alpha: 1.0)
+        }else if level! >= 300, level! < 500 {
+            levelStr += "差 " + pm25!
+            airImage.image = UIImage.init(named: "colorBar6")
+            airLevelLabel.textColor = UIColor(red: 120/255, green: 47/255, blue: 67/255, alpha: 1.0)
+        }else{
+            levelStr += "极差 " + pm25!
+            airImage.image = UIImage.init(named: "colorBar7")
+            airLevelLabel.textColor = UIColor(red: 80/255, green: 20/255, blue: 63/255, alpha: 1.0)
+        }
+        airLevelLabel.text = levelStr
+        
+    }
+    
+    func setDailyWeatherData (dailyJson : JSON) {
+        let todayHigh = dailyJson["results"][0]["daily"][0]["high"].rawString()
+        let todayLow = dailyJson["results"][0]["daily"][0]["low"].rawString()
+        nowTempratureLabel.text = todayLow! + "/" + todayHigh! + "°C"
+    }
+    
+    func createHourWeatherView (hourJson : JSON) {
+        
+//        let width : CGFloat = SCREEN_WIDTH / 7.5
+        
+        for (index,subJson):(String, JSON) in hourJson["results"][0]["hourly"]
+        {
+            let hourLabel = UILabel.init(frame: CGRect.init(x: 60 * Int(index)!, y: 0, width: 60, height: 20));
+            hourLabel.font = UIFont.systemFont(ofSize: 16)
+            hourLabel.textColor = UIColor.white
+            hourLabel.textAlignment = NSTextAlignment.center
+            let time = subJson["time"].stringValue
+            let range = time.range(of: "T")
+            let range2 = time.range(of: ":")
+            let hour = time.substring(with: (range?.upperBound)!..<(range2?.lowerBound)!)
+            hourLabel.text = NSString.init(format: "%@时", hour) as String
+            hourScrollView.addSubview(hourLabel)
+            
+            let hourImageView = UIImageView.init(frame: CGRect.init(x: 60 * Int(index)! + 5, y: Int(hourLabel.frame.maxY + 10), width: 40, height: 40));
+            hourImageView.image = UIImage.init(named: subJson["code"].rawString()!)
+            hourScrollView.addSubview(hourImageView)
+            
+            let hourWeatherLabel = UILabel.init(frame: CGRect.init(x: 60 * Int(index)!, y: Int(hourImageView.frame.maxY + 5), width: 60, height: 20));
+            hourWeatherLabel.font = UIFont.systemFont(ofSize: 16)
+            hourWeatherLabel.textColor = UIColor.white
+            hourWeatherLabel.textAlignment = NSTextAlignment.center
+            hourWeatherLabel.text = NSString.init(format: "%@°C", subJson["temperature"].rawString()!) as String
+            hourScrollView.addSubview(hourWeatherLabel)
+            
+            //            hourScrollView.contentSize = CGSize.init(width: 60 * Int(index)!, height: 0)
+            print("\(index)：\(subJson)")
+        }
+        hourScrollView.contentSize = CGSize.init(width: 60 * (hourJson["results"][0]["hourly"].array?.count)!, height: 0)
+        
+    }
+
 
     
     // MARK: - Table view data source
@@ -192,5 +360,45 @@ class mainTableViewController: UITableViewController{
     @IBAction func backToMain(_ sender: UIBarButtonItem) {
         dismiss(animated: true, completion: nil)
     }
+    
+    @IBAction func unwindToWeatherMain(segue:UIStoryboardSegue){//退出函数
+        // 查询显示北京天气
+        if segue.identifier == "beijingExit", let detailVC = segue.source as? AddCityViewController{
+            let cityName = detailVC.cityName
+            print("cityName=="+cityName)
+            self.navigationItem.title = cityName
+        }
+        // 查询显示天津天气
+        if segue.identifier == "tianjinExit", let detailVC = segue.source as? AddCityViewController{
+            let cityName = detailVC.cityName
+            print("cityName=="+cityName)
+            self.navigationItem.title = cityName
+        }
+        // 查询显示上海天气
+        if segue.identifier == "shanghaiExit", let detailVC = segue.source as? AddCityViewController{
+            let cityName = detailVC.cityName
+            print("cityName=="+cityName)
+            self.navigationItem.title = cityName
+        }
+        // 查询显示广州天气
+        if segue.identifier == "guangzhouExit", let detailVC = segue.source as? AddCityViewController{
+            let cityName = detailVC.cityName
+            print("cityName=="+cityName)
+            self.navigationItem.title = cityName
+        }
+        // 查询显示深圳天气
+        if segue.identifier == "shenzhenExit", let detailVC = segue.source as? AddCityViewController{
+            let cityName = detailVC.cityName
+            print("cityName=="+cityName)
+            self.navigationItem.title = cityName
+        }
+        
+        if segue.identifier == "showWhetherFromCityList", let detailVC = segue.source as? CityListTableViewController{
+            let cityName = detailVC.cityName
+            print("cityName=="+cityName)
+            self.navigationItem.title = cityName
+        }
+    }
+
 
 }

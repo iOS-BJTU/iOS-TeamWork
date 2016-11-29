@@ -45,11 +45,6 @@ class CityListTableViewController: UITableViewController {
         // Configure the cell...
         let city = cityList[indexPath.row]
         // Configure the cell...
-        //        if let photoData = city?.tempratureImage {
-        //            cell.whetherImageView.image = UIImage(data: photoData)
-        //        } else {
-        //            cell.whetherImageView.image = UIImage(named:"photoalbum")
-        //        }
         cell.whetherImageView.image = UIImage(named: "0")
         cell.cityLabel.text = city?.cityName
         cell.tempretureLabel.text = city?.temprature
@@ -109,7 +104,7 @@ class CityListTableViewController: UITableViewController {
    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
         // Get the new view controller using segue.destinationViewController.
         // Pass the selected object to the new view controller.
-        if segue.identifier == "showWhetherFromCityList", let destVC = segue.destination as? WeatherMainViewController,
+        if segue.identifier == "showWhetherFromCityList", let destVC = segue.destination as? mainTableViewController,
             let indexPath = tableView.indexPathForSelectedRow{
             cityName = (cityList[indexPath.row]?.cityName)!
             destVC.cityName = cityName

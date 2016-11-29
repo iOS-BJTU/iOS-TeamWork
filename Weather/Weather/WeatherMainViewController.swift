@@ -60,7 +60,7 @@ class WeatherMainViewController: UIViewController{
     }
     */
     
-    @IBAction func unwindToWeatherMain(segue:UIStoryboardSegue){//退出函数
+    @IBAction func unwindToMain(segue:UIStoryboardSegue){//退出函数
         // 查询显示北京天气
         if segue.identifier == "beijingExit", let detailVC = segue.source as? AddCityViewController{
             let cityName = detailVC.cityName

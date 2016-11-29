@@ -33,7 +33,6 @@ class AddCityViewController: UIViewController {
     }
     
     @IBAction func tianjinBtn(_ sender: UIButton) {// 查天津的天气然后回主页显示
-//        performSegue(withIdentifier: "tianjinWeatherSegue", sender: self)
     }
     
     @IBAction func shanghaiBtn(_ sender: UIButton) {// 查上海的天气然后回主页显示
@@ -67,23 +66,23 @@ class AddCityViewController: UIViewController {
 //        theSegue.text = "Pass"
         
 //        if segue.identifier == "tianjinWeatherSegue", let destVC = segue.destination as?
-        if segue.identifier == "beijingExit", let destVC = segue.destination as? WeatherMainViewController{
+        if segue.identifier == "beijingExit", let destVC = segue.destination as? mainTableViewController{
             cityName = "北京"
             destVC.cityName = "北京"
         }
-        if segue.identifier == "tianjinExit", let destVC = segue.destination as? WeatherMainViewController{
+        if segue.identifier == "tianjinExit", let destVC = segue.destination as? mainTableViewController{
             cityName = "天津"
             destVC.cityName = "天津"
         }
-        if segue.identifier == "shanghaiExit", let destVC = segue.destination as? WeatherMainViewController{
+        if segue.identifier == "shanghaiExit", let destVC = segue.destination as? mainTableViewController{
             cityName = "上海"
             destVC.cityName = "上海"
         }
-        if segue.identifier == "guangzhouExit", let destVC = segue.destination as? WeatherMainViewController{
+        if segue.identifier == "guangzhouExit", let destVC = segue.destination as? mainTableViewController{
             cityName = "广州"
             destVC.cityName = "广州"
         }
-        if segue.identifier == "shenzhenExit", let destVC = segue.destination as? WeatherMainViewController{
+        if segue.identifier == "shenzhenExit", let destVC = segue.destination as? mainTableViewController{
             cityName = "深圳"
             destVC.cityName = "深圳"
         }
