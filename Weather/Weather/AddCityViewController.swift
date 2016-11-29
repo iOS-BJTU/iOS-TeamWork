@@ -86,6 +86,10 @@ class AddCityViewController: UIViewController {
             cityName = "深圳"
             destVC.cityName = "深圳"
         }
+        if segue.identifier == "searchCity", let destVC = segue.destination as? mainTableViewController{
+            cityName = cityTextField.text!
+            destVC.cityName = cityTextField.text!
+        }
     }
  
 

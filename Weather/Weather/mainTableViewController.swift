@@ -53,6 +53,8 @@ class mainTableViewController: UITableViewController{
         //下拉刷新
         automaticallyAdjustsScrollViewInsets = false
         tableView.addExRefresh {
+            print("cityName=?="+self.cityName)
+            self.loadWeather(city: self.cityName)
             self.perform(#selector(self.afterMethod), with: nil, afterDelay: 3, inModes: [RunLoopMode.commonModes])
         }
         
@@ -130,9 +132,9 @@ class mainTableViewController: UITableViewController{
         
         let nowStr = "https://api.thinkpage.cn/v3/weather/now.json?key=stgqeqzd7smkfdzn&location=\(cityname)&language=zh-Hans&unit=c"
         let hourStr = "https://api.thinkpage.cn/v3/weather/hourly.json?key=stgqeqzd7smkfdzn&location=\(cityname)&language=zh-Hans&unit=c&start=0&hours=24"
-        let airStr = "https://api.thinkpage.cn/v3/air/now.json?key=stgqeqzd7smkfdzn&location=beijing&language=zh-Hans&scope=city"
-        let dailyStr = "https://api.thinkpage.cn/v3/weather/daily.json?key=stgqeqzd7smkfdzn&location=beijing&language=zh-Hans&unit=c&start=0&days=5"
-        let lifeStr = "https://api.thinkpage.cn/v3/life/suggestion.json?key=stgqeqzd7smkfdzn&location=shanghai&language=zh-Hans"
+        let airStr = "https://api.thinkpage.cn/v3/air/now.json?key=stgqeqzd7smkfdzn&location=\(cityname)&language=zh-Hans&scope=city"
+        let dailyStr = "https://api.thinkpage.cn/v3/weather/daily.json?key=stgqeqzd7smkfdzn&location=\(cityname)&language=zh-Hans&unit=c&start=0&days=5"
+        let lifeStr = "https://api.thinkpage.cn/v3/life/suggestion.json?key=stgqeqzd7smkfdzn&location=\(cityname)&language=zh-Hans"
         
         let nowUrl = URL(string: nowStr)
         let hourUrl = URL(string: hourStr)
@@ -162,6 +164,10 @@ class mainTableViewController: UITableViewController{
             print("next")
             if let temp2 = hourJson["results"][0]["hourly"][0].rawString() {
                 // 24小时天气
+                let subViews = self.hourScrollView.subviews
+                for subview in subViews{
+                    subview.removeFromSuperview()
+                }
                 self.createHourWeatherView(hourJson: hourJson)
                 print(temp2)
             }else {
@@ -191,6 +197,7 @@ class mainTableViewController: UITableViewController{
                 // 逐日天气
 //                setLifeData(lifeJson: lifeJson)
                 print(temp5)
+                tableView.reloadData()
             }else {
                 // 打印错误信息
                 print("www")
@@ -205,7 +212,6 @@ class mainTableViewController: UITableViewController{
         windScaleLabel.text = weatherJson["results"][0]["now"]["wind_scale"].rawString()
         humidityLabel.text = weatherJson["results"][0]["now"]["humidity"].rawString()
         weatherImage.image = UIImage.init(named: weatherJson["results"][0]["now"]["code"].rawString()!)
-
     }
     
     func setAirData (airJson : JSON) {
@@ -213,37 +219,29 @@ class mainTableViewController: UITableViewController{
         let quality = airJson["results"][0]["air"]["city"]["quality"].rawString()
         nowAirLabel.text = pm25! + " " + quality!
         let level = Int(pm25!)
-        var levelStr = "空气"
         if level! < 50{
-            levelStr += "优 " + pm25!
             airImage.image = UIImage.init(named: "colorBar1")
             airLevelLabel.textColor = UIColor(red: 131/255, green: 192/255, blue: 92/255, alpha: 1.0)
         }else if level! >= 50, level! < 100 {
-            levelStr += "优 " + pm25!
             airImage.image = UIImage.init(named: "colorBar2")
             airLevelLabel.textColor = UIColor(red: 232/255, green: 190/255, blue: 81/255, alpha: 1.0)
         }else if level! >= 100, level! < 150 {
-            levelStr += "良 " + pm25!
             airImage.image = UIImage.init(named: "colorBar3")
             airLevelLabel.textColor = UIColor(red: 236/255, green: 159/255, blue: 98/255, alpha: 1.0)
         }else if level! >= 150, level! < 200 {
-            levelStr += "良 " + pm25!
             airImage.image = UIImage.init(named: "colorBar4")
             airLevelLabel.textColor = UIColor(red: 222/255, green: 125/255, blue: 87/255, alpha: 1.0)
         }else if level! >= 200, level! < 300 {
-            levelStr += "差 " + pm25!
             airImage.image = UIImage.init(named: "colorBar5")
             airLevelLabel.textColor = UIColor(red: 156/255, green: 70/255, blue: 89/255, alpha: 1.0)
         }else if level! >= 300, level! < 500 {
-            levelStr += "差 " + pm25!
             airImage.image = UIImage.init(named: "colorBar6")
             airLevelLabel.textColor = UIColor(red: 120/255, green: 47/255, blue: 67/255, alpha: 1.0)
         }else{
-            levelStr += "极差 " + pm25!
             airImage.image = UIImage.init(named: "colorBar7")
             airLevelLabel.textColor = UIColor(red: 80/255, green: 20/255, blue: 63/255, alpha: 1.0)
         }
-        airLevelLabel.text = levelStr
+        airLevelLabel.text = quality! + " " + pm25!
         
     }
     
@@ -254,9 +252,7 @@ class mainTableViewController: UITableViewController{
     }
     
     func createHourWeatherView (hourJson : JSON) {
-        
-//        let width : CGFloat = SCREEN_WIDTH / 7.5
-        
+//        let width : CGFloat = SCREEN_WIDTH / 7.5        
         for (index,subJson):(String, JSON) in hourJson["results"][0]["hourly"]
         {
             let hourLabel = UILabel.init(frame: CGRect.init(x: 60 * Int(index)!, y: 0, width: 60, height: 20));
@@ -364,39 +360,52 @@ class mainTableViewController: UITableViewController{
     @IBAction func unwindToWeatherMain(segue:UIStoryboardSegue){//退出函数
         // 查询显示北京天气
         if segue.identifier == "beijingExit", let detailVC = segue.source as? AddCityViewController{
-            let cityName = detailVC.cityName
+            cityName = detailVC.cityName
             print("cityName=="+cityName)
             self.navigationItem.title = cityName
+            loadWeather(city: "北京")
         }
         // 查询显示天津天气
         if segue.identifier == "tianjinExit", let detailVC = segue.source as? AddCityViewController{
-            let cityName = detailVC.cityName
+            cityName = detailVC.cityName
             print("cityName=="+cityName)
             self.navigationItem.title = cityName
+            loadWeather(city: "天津")
         }
         // 查询显示上海天气
         if segue.identifier == "shanghaiExit", let detailVC = segue.source as? AddCityViewController{
-            let cityName = detailVC.cityName
+            cityName = detailVC.cityName
             print("cityName=="+cityName)
             self.navigationItem.title = cityName
+            loadWeather(city: "上海")
         }
         // 查询显示广州天气
         if segue.identifier == "guangzhouExit", let detailVC = segue.source as? AddCityViewController{
-            let cityName = detailVC.cityName
+            cityName = detailVC.cityName
             print("cityName=="+cityName)
             self.navigationItem.title = cityName
+            loadWeather(city: "广州")
         }
         // 查询显示深圳天气
         if segue.identifier == "shenzhenExit", let detailVC = segue.source as? AddCityViewController{
-            let cityName = detailVC.cityName
+            cityName = detailVC.cityName
             print("cityName=="+cityName)
             self.navigationItem.title = cityName
+            loadWeather(city: "深圳")
         }
         
         if segue.identifier == "showWhetherFromCityList", let detailVC = segue.source as? CityListTableViewController{
-            let cityName = detailVC.cityName
+            cityName = detailVC.cityName
             print("cityName=="+cityName)
             self.navigationItem.title = cityName
+            loadWeather(city: cityName)
+        }
+        
+        if segue.identifier == "searchCity", let detailVC = segue.source as? AddCityViewController{
+            cityName = detailVC.cityName
+            print("cityName=="+cityName)
+            self.navigationItem.title = cityName
+            loadWeather(city: cityName)
         }
     }
 
