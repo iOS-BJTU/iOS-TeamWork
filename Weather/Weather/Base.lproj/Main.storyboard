@@ -288,10 +288,41 @@
                                     </tableViewCell>
                                 </cells>
                             </tableViewSection>
+                            <tableViewSection id="yRe-U1-GR5">
+                                <cells>
+                                    <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" selectionStyle="default" indentationWidth="10" rowHeight="100" id="4ND-yK-R8d">
+                                        <rect key="frame" x="0.0" y="926" width="320" height="100"/>
+                                        <autoresizingMask key="autoresizingMask"/>
+                                        <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="4ND-yK-R8d" id="fYm-TU-20l">
+                                            <rect key="frame" x="0.0" y="0.0" width="320" height="99"/>
+                                            <autoresizingMask key="autoresizingMask"/>
+                                            <subviews>
+                                                <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="background1-1" translatesAutoresizingMaskIntoConstraints="NO" id="XPv-ac-p77">
+                                                    <rect key="frame" x="0.0" y="0.0" width="320" height="100"/>
+                                                </imageView>
+                                                <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="Gbg-16-USd" customClass="LineChartView" customModule="Charts">
+                                                    <rect key="frame" x="5" y="0.0" width="310" height="99"/>
+                                                    <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                                                </view>
+                                            </subviews>
+                                            <constraints>
+                                                <constraint firstAttribute="trailing" secondItem="Gbg-16-USd" secondAttribute="trailing" constant="5" id="0QM-l2-8mp"/>
+                                                <constraint firstItem="XPv-ac-p77" firstAttribute="top" secondItem="fYm-TU-20l" secondAttribute="top" id="0Ub-xy-pqJ"/>
+                                                <constraint firstAttribute="trailing" secondItem="XPv-ac-p77" secondAttribute="trailing" id="Kn8-76-jbZ"/>
+                                                <constraint firstItem="Gbg-16-USd" firstAttribute="top" secondItem="fYm-TU-20l" secondAttribute="top" id="OVl-rz-A4X"/>
+                                                <constraint firstItem="XPv-ac-p77" firstAttribute="leading" secondItem="fYm-TU-20l" secondAttribute="leading" id="Ww9-de-JFS"/>
+                                                <constraint firstAttribute="bottom" secondItem="XPv-ac-p77" secondAttribute="bottom" id="cTq-0e-Qua"/>
+                                                <constraint firstAttribute="bottom" secondItem="Gbg-16-USd" secondAttribute="bottom" id="oIC-lz-vcO"/>
+                                                <constraint firstItem="Gbg-16-USd" firstAttribute="leading" secondItem="fYm-TU-20l" secondAttribute="leading" constant="5" id="oau-NP-any"/>
+                                            </constraints>
+                                        </tableViewCellContentView>
+                                    </tableViewCell>
+                                </cells>
+                            </tableViewSection>
                             <tableViewSection headerTitle="空气质量" id="Rav-K1-AHu">
                                 <cells>
                                     <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" selectionStyle="default" indentationWidth="10" rowHeight="161" id="U32-z0-ih6">
-                                        <rect key="frame" x="0.0" y="954" width="320" height="161"/>
+                                        <rect key="frame" x="0.0" y="1054" width="320" height="161"/>
                                         <autoresizingMask key="autoresizingMask"/>
                                         <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="U32-z0-ih6" id="623-xx-yns">
                                             <rect key="frame" x="0.0" y="0.0" width="320" height="160"/>
@@ -333,7 +364,7 @@
                             <tableViewSection headerTitle="生活指数" id="68Q-jd-30a">
                                 <cells>
                                     <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" selectionStyle="default" indentationWidth="10" rowHeight="203" id="0pj-Ye-xcb">
-                                        <rect key="frame" x="0.0" y="1143" width="320" height="203"/>
+                                        <rect key="frame" x="0.0" y="1243" width="320" height="203"/>
                                         <autoresizingMask key="autoresizingMask"/>
                                         <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="0pj-Ye-xcb" id="QwA-8r-TPb">
                                             <rect key="frame" x="0.0" y="0.0" width="320" height="202"/>
@@ -371,7 +402,8 @@
                         <outlet property="airLevelLabel" destination="UbZ-8C-mr7" id="Eo9-MG-J9L"/>
                         <outlet property="hourScrollView" destination="TzE-DC-uvl" id="CBn-A7-Wnj"/>
                         <outlet property="humidityLabel" destination="3BM-7k-RZI" id="2ug-kh-BOk"/>
-                        <outlet property="lineChartView" destination="a41-1H-fL4" id="g8r-TS-f7l"/>
+                        <outlet property="lineChartViewHigh" destination="a41-1H-fL4" id="ZcQ-fs-ja7"/>
+                        <outlet property="lineChartViewLow" destination="Gbg-16-USd" id="TgN-IY-Pdg"/>
                         <outlet property="nowAirLabel" destination="bgy-yC-xUr" id="C3c-2S-CEi"/>
                         <outlet property="nowTempratureLabel" destination="1R6-Ug-Y44" id="aGB-Cy-dcc"/>
                         <outlet property="nowTextLabel" destination="KP9-HE-g6Y" id="zdX-KE-Cfi"/>

@@ -11,7 +11,8 @@ import SwiftyJSON
 import Charts
 
 class mainTableViewController: UITableViewController{
-    @IBOutlet weak var lineChartView: LineChartView!
+    @IBOutlet weak var lineChartViewHigh: LineChartView!
+    @IBOutlet weak var lineChartViewLow: LineChartView!
     @IBOutlet weak var hourScrollView: UIScrollView!
     @IBOutlet weak var tempratureLabel: UILabel!
     @IBOutlet weak var nowTextLabel: UILabel!
@@ -25,7 +26,9 @@ class mainTableViewController: UITableViewController{
     
 
     var cityName = "北京"
-    var hours = [String]()
+    var days = [String]()
+    var highDegree = [Int]()
+    var lowDegree = [Int]()
     override func viewDidLoad() {
         super.viewDidLoad()
 
@@ -34,14 +37,8 @@ class mainTableViewController: UITableViewController{
 
         // Uncomment the following line to display an Edit button in the navigation bar for this view controller.
         // self.navigationItem.rightBarButtonItem = self.editButtonItem()
-        for i in 1..<8 {
-            hours += ["\(i)时"]
-        }
-        let wendu = [-1,-2,-3,-4,-1,-2,-3]
-        setChart(dataPoints: hours, values: wendu)
         
         loadWeather(city: "北京")
-        
         // 计算屏幕长宽
         let screenWidth = UIScreen.main.bounds.size.width
         let screenHeight = UIScreen.main.bounds.size.height        
@@ -70,7 +67,7 @@ class mainTableViewController: UITableViewController{
         // Dispose of any resources that can be recreated.
     }
     
-    func setChart(dataPoints: [String], values: [Int]) {
+    func setChartHigh(dataPoints: [String], values: [Int]) {
         
         var dataEntries: [ChartDataEntry] = []
         for i in 0..<dataPoints.count {
@@ -79,9 +76,9 @@ class mainTableViewController: UITableViewController{
         }
         let chartDataSet = LineChartDataSet(values:dataEntries, label: nil)
         let chartData = LineChartData(dataSet: chartDataSet)
-        lineChartView.data = chartData
+        lineChartViewHigh.data = chartData
         // 自定义颜色
-        lineChartView.backgroundColor = .clear
+        lineChartViewHigh.backgroundColor = .clear
         
         chartDataSet.drawCirclesEnabled = true//画外环
         
@@ -99,31 +96,93 @@ class mainTableViewController: UITableViewController{
         
         chartDataSet.mode = LineChartDataSet.Mode.cubicBezier
         
-        lineChartView.leftAxis.drawGridLinesEnabled = false //多个横轴
+        lineChartViewHigh.leftAxis.drawGridLinesEnabled = false //多个横轴
         
-        lineChartView.rightAxis.drawGridLinesEnabled = false //多个横轴(left, right同时false才能不展示横轴)
-        lineChartView.rightAxis.drawAxisLineEnabled = false //不展示右侧Y轴
+        lineChartViewHigh.rightAxis.drawGridLinesEnabled = false //多个横轴(left, right同时false才能不展示横轴)
+        lineChartViewHigh.rightAxis.drawAxisLineEnabled = false //不展示右侧Y轴
         
-        lineChartView.leftAxis.drawAxisLineEnabled = false
+        lineChartViewHigh.leftAxis.drawAxisLineEnabled = false
         
-        lineChartView.xAxis.drawGridLinesEnabled = false //多个纵轴
+        lineChartViewHigh.xAxis.drawGridLinesEnabled = false //多个纵轴
         
-        lineChartView.xAxis.drawAxisLineEnabled = false
+        lineChartViewHigh.xAxis.drawAxisLineEnabled = false
         
-        lineChartView.xAxis.valueFormatter = IndexAxisValueFormatter(values: dataPoints)
+        lineChartViewHigh.xAxis.valueFormatter = IndexAxisValueFormatter(values: dataPoints)
         
-        ///lineChartView.xAxis.granularity = 1.0
+        lineChartViewHigh.xAxis.labelPosition = .top //只显示底部的X轴
         
-        lineChartView.xAxis.labelPosition = .bottom //只显示底部的X轴
+        lineChartViewHigh.rightAxis.enabled = false //不展示右侧Y轴数据
         
-        lineChartView.rightAxis.enabled = false //不展示右侧Y轴数据
+        lineChartViewHigh.leftAxis.enabled = false
         
-        lineChartView.leftAxis.enabled = false
+        lineChartViewHigh.chartDescription?.text = ""
         
-        lineChartView.chartDescription?.text = ""
+        lineChartViewHigh.xAxis.labelTextColor = .white
         
-        lineChartView.xAxis.labelTextColor = .white
-        lineChartView.legend.formSize = 0
+        lineChartViewHigh.legend.formSize = 0
+        
+        lineChartViewHigh.dragEnabled = false
+        
+        lineChartViewHigh.doubleTapToZoomEnabled = false
+        
+    }
+    func setChartLow(dataPoints: [String], values: [Int]) {
+        
+        var dataEntries: [ChartDataEntry] = []
+        for i in 0..<dataPoints.count {
+            let dataEntry = ChartDataEntry(x: Double(i), y: Double(values[i]))
+            dataEntries.append(dataEntry)
+        }
+        let chartDataSet = LineChartDataSet(values:dataEntries, label: nil)
+        let chartData = LineChartData(dataSet: chartDataSet)
+        lineChartViewLow.data = chartData
+        // 自定义颜色
+        lineChartViewLow.backgroundColor = .clear
+        
+        chartDataSet.drawCirclesEnabled = true//画外环
+        
+        chartDataSet.drawCircleHoleEnabled = false //不画内环
+        
+        chartDataSet.circleRadius = 2//外环直径像素
+        
+        //chartDataSet.circleHoleRadius = 2//内环直径
+        
+        chartDataSet.setCircleColor(UIColor.white)//环的颜色设置
+        
+        chartDataSet.valueTextColor = .white //环上字体颜色
+        
+        chartDataSet.drawValuesEnabled = true //展示环上的值
+        
+        chartDataSet.mode = LineChartDataSet.Mode.cubicBezier
+        
+        lineChartViewLow.leftAxis.drawGridLinesEnabled = false //多个横轴
+        
+        lineChartViewLow.rightAxis.drawGridLinesEnabled = false //多个横轴(left, right同时false才能不展示横轴)
+        lineChartViewLow.rightAxis.drawAxisLineEnabled = false //不展示右侧Y轴
+        
+        lineChartViewLow.leftAxis.drawAxisLineEnabled = false
+        
+        lineChartViewLow.xAxis.drawGridLinesEnabled = false //多个纵轴
+        
+        lineChartViewLow.xAxis.drawAxisLineEnabled = false
+        
+        lineChartViewLow.xAxis.valueFormatter = IndexAxisValueFormatter(values: dataPoints)
+        
+        lineChartViewLow.xAxis.labelPosition = .bottom //只显示底部的X轴
+        
+        lineChartViewLow.rightAxis.enabled = false //不展示右侧Y轴数据
+        
+        lineChartViewLow.leftAxis.enabled = false
+        
+        lineChartViewLow.chartDescription?.text = ""
+        
+        lineChartViewLow.xAxis.labelTextColor = .white
+        
+        lineChartViewLow.legend.formSize = 0
+        
+        lineChartViewLow.dragEnabled = false
+        
+        lineChartViewLow.doubleTapToZoomEnabled = false
         
     }
 
@@ -133,7 +192,7 @@ class mainTableViewController: UITableViewController{
         let nowStr = "https://api.thinkpage.cn/v3/weather/now.json?key=stgqeqzd7smkfdzn&location=\(cityname)&language=zh-Hans&unit=c"
         let hourStr = "https://api.thinkpage.cn/v3/weather/hourly.json?key=stgqeqzd7smkfdzn&location=\(cityname)&language=zh-Hans&unit=c&start=0&hours=24"
         let airStr = "https://api.thinkpage.cn/v3/air/now.json?key=stgqeqzd7smkfdzn&location=\(cityname)&language=zh-Hans&scope=city"
-        let dailyStr = "https://api.thinkpage.cn/v3/weather/daily.json?key=stgqeqzd7smkfdzn&location=\(cityname)&language=zh-Hans&unit=c&start=0&days=5"
+        let dailyStr = "https://api.thinkpage.cn/v3/weather/daily.json?key=stgqeqzd7smkfdzn&location=\(cityname)&language=zh-Hans&unit=c&start=0&days=7"
         let lifeStr = "https://api.thinkpage.cn/v3/life/suggestion.json?key=stgqeqzd7smkfdzn&location=\(cityname)&language=zh-Hans"
         
         let nowUrl = URL(string: nowStr)
@@ -249,6 +308,17 @@ class mainTableViewController: UITableViewController{
         let todayHigh = dailyJson["results"][0]["daily"][0]["high"].rawString()
         let todayLow = dailyJson["results"][0]["daily"][0]["low"].rawString()
         nowTempratureLabel.text = todayLow! + "/" + todayHigh! + "°C"
+        lowDegree.removeAll()
+        highDegree.removeAll()
+        days.removeAll()
+        for var i in 0..<dailyJson["results"][0]["daily"].count{
+            days.append(dailyJson["results"][0]["daily"][i]["date"].rawString()!)
+            lowDegree.append(Int(dailyJson["results"][0]["daily"][i]["low"].rawString()!)!)
+            highDegree.append(Int(dailyJson["results"][0]["daily"][i]["high"].rawString()!)!)
+            i += 1
+        }
+        setChartHigh(dataPoints: days, values: highDegree)
+        setChartLow(dataPoints: days, values: lowDegree)
     }
     
     func createHourWeatherView (hourJson : JSON) {
@@ -281,11 +351,7 @@ class mainTableViewController: UITableViewController{
             print("\(index)：\(subJson)")
         }
         hourScrollView.contentSize = CGSize.init(width: 60 * (hourJson["results"][0]["hourly"].array?.count)!, height: 0)
-        
     }
-
-
-    
     // MARK: - Table view data source
 
 //    override func numberOfSections(in tableView: UITableView) -> Int {
