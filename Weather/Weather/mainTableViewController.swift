@@ -24,7 +24,7 @@ class mainTableViewController: UITableViewController{
     @IBOutlet weak var airLevelLabel: UILabel!
     @IBOutlet weak var airImage: UIImageView!
     
-
+    var locationAddress = "北京"
     var cityName = "北京"
     var days = [String]()
     var highDegree = [Int]()
@@ -95,6 +95,8 @@ class mainTableViewController: UITableViewController{
         chartDataSet.drawValuesEnabled = true //展示环上的值
         
         chartDataSet.mode = LineChartDataSet.Mode.cubicBezier
+        
+        chartDataSet.colors = [UIColor.yellow]
         
         lineChartViewHigh.leftAxis.drawGridLinesEnabled = false //多个横轴
         
@@ -331,17 +333,40 @@ class mainTableViewController: UITableViewController{
     }
     
     func createHourWeatherView (hourJson : JSON) {
-//        let width : CGFloat = SCREEN_WIDTH / 7.5        
+        //        let width : CGFloat = SCREEN_WIDTH / 7.5
         for (index,subJson):(String, JSON) in hourJson["results"][0]["hourly"]
         {
-            let hourLabel = UILabel.init(frame: CGRect.init(x: 60 * Int(index)!, y: 0, width: 60, height: 20));
-            hourLabel.font = UIFont.systemFont(ofSize: 16)
-            hourLabel.textColor = UIColor.white
-            hourLabel.textAlignment = NSTextAlignment.center
+            let dateLabel = UILabel.init(frame: CGRect.init(x: 60 * Int(index)!, y: 5, width: 60, height: 20));
+            dateLabel.font = UIFont.systemFont(ofSize: 16)
+            dateLabel.textColor = UIColor.lightGray
+            dateLabel.textAlignment = NSTextAlignment.center
             let time = subJson["time"].stringValue
             let range = time.range(of: "T")
             let range2 = time.range(of: ":")
             let hour = time.substring(with: (range?.upperBound)!..<(range2?.lowerBound)!)
+            
+            
+            let range3 = time.range(of: "-")
+            let range4 = time.range(of: "T")
+            let date = time.substring(with: (range3?.upperBound)!..<(range4?.lowerBound)!)
+
+            if hour == "00" {
+                dateLabel.text = date
+            }
+            if Int(index) == 0 {
+                dateLabel.text = date
+            }
+            
+            hourScrollView.addSubview(dateLabel)
+            
+            let hourLabel = UILabel.init(frame: CGRect.init(x: 60 * Int(index)!, y: Int(dateLabel.frame.maxY + 10), width: 60, height: 20));
+            hourLabel.font = UIFont.systemFont(ofSize: 15)
+            hourLabel.textColor = UIColor.white
+            hourLabel.textAlignment = NSTextAlignment.center
+//            let time = subJson["time"].stringValue
+//            let range = time.range(of: "T")
+//            let range2 = time.range(of: ":")
+//            let hour = time.substring(with: (range?.upperBound)!..<(range2?.lowerBound)!)
             hourLabel.text = NSString.init(format: "%@时", hour) as String
             hourScrollView.addSubview(hourLabel)
             
@@ -350,7 +375,7 @@ class mainTableViewController: UITableViewController{
             hourScrollView.addSubview(hourImageView)
             
             let hourWeatherLabel = UILabel.init(frame: CGRect.init(x: 60 * Int(index)!, y: Int(hourImageView.frame.maxY + 5), width: 60, height: 20));
-            hourWeatherLabel.font = UIFont.systemFont(ofSize: 16)
+            hourWeatherLabel.font = UIFont.systemFont(ofSize: 15)
             hourWeatherLabel.textColor = UIColor.white
             hourWeatherLabel.textAlignment = NSTextAlignment.center
             hourWeatherLabel.text = NSString.init(format: "%@°C", subJson["temperature"].rawString()!) as String
@@ -361,6 +386,7 @@ class mainTableViewController: UITableViewController{
         }
         hourScrollView.contentSize = CGSize.init(width: 60 * (hourJson["results"][0]["hourly"].array?.count)!, height: 0)
     }
+
     // MARK: - Table view data source
 
 //    override func numberOfSections(in tableView: UITableView) -> Int {
@@ -482,6 +508,17 @@ class mainTableViewController: UITableViewController{
             self.navigationItem.title = cityName
             loadWeather(city: cityName)
         }
+        
+        if segue.identifier == "locateSuccess", let detailVC = segue.source as? AddCityViewController
+            {
+            let location = detailVC.locationAddress
+            self.cityName = location
+            print("locationAddress0=="+cityName)
+            self.navigationItem.title = cityName
+            loadWeather(city: cityName)
+//            saveList()
+        }
+
     }
 
 

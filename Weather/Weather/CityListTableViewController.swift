@@ -48,12 +48,11 @@ class CityListTableViewController: UITableViewController {
         cell.whetherImageView.image = UIImage(named: "0")
         cell.cityLabel.text = city?.cityName
         cell.tempretureLabel.text = city?.temprature
-        if indexPath.row == 0 {
+        if city?.cityName == "北京"{
             cell.locationImageView.isHidden = false
         }else{
             cell.locationImageView.isHidden = true
         }
-        
         
         return cell
     }

@@ -7,10 +7,15 @@
 //
 
 import UIKit
+import CoreLocation
 
-class AddCityViewController: UIViewController {
+class AddCityViewController: UIViewController , CLLocationManagerDelegate{
     var cityName = "??"
+    let locationManager = CLLocationManager()
+    let geocoder = CLGeocoder()
+    var locationAddress :String = "北京"
     @IBOutlet weak var cityTextField: UITextField!
+    
     @IBAction func closeAddCity(_ sender: UIButton) {
         performSegue(withIdentifier: "addCityExit", sender: self)//退出视窗
     }
@@ -27,6 +32,17 @@ class AddCityViewController: UIViewController {
     }
 
     @IBAction func locationBtn(_ sender: UIButton) {//定位-然后应该定位然后在下面显示他的位置？
+        let status = CLLocationManager.authorizationStatus()
+        if status == .restricted || status == .denied {
+            print("locatio service is denied")
+        } else {
+            if status == .notDetermined {
+                locationManager.delegate = self
+                locationManager.requestWhenInUseAuthorization()
+            } else {
+                startLocationService()
+            }
+        }
     }
     
     @IBAction func beijingBtn(_ sender: UIButton) {// 查北京的天气然后回主页显示
@@ -90,9 +106,13 @@ class AddCityViewController: UIViewController {
             cityName = cityTextField.text!
             destVC.cityName = cityTextField.text!
         }
+        if segue.identifier == "locateSuccess", let destVC = segue.destination as? mainTableViewController{
+            cityName = locationAddress
+            destVC.cityName = cityName
+        }
     }
- 
-
+    
+    
     override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
         self.cityTextField.resignFirstResponder()
     }
@@ -102,5 +122,91 @@ class AddCityViewController: UIViewController {
     }
     @IBAction func addCityExit(segue:UIStoryboardSegue) {
         dismiss(animated: true, completion: nil)
+    }
+    
+    func startLocationService() {
+        locationManager.delegate = self
+        locationManager.distanceFilter = kCLDistanceFilterNone
+        locationManager.desiredAccuracy = kCLLocationAccuracyThreeKilometers
+        locationManager.startUpdatingLocation()
+    }
+    
+    func stopLocationService() {
+        locationManager.delegate = nil
+        locationManager.stopUpdatingLocation()
+    }
+    func locationManager(_ manager: CLLocationManager, didFailWithError error: Error) {
+        print("didFailWithError \(error)")
+        if (error as NSError).code != CLError.locationUnknown.rawValue {
+            stopLocationService()
+        }
+    }
+    
+    func locationManager(_ manager: CLLocationManager, didUpdateLocations locations: [CLLocation]) {
+        let newLocation = locations.last!
+        if newLocation.timestamp.timeIntervalSinceNow < -5 {
+            return
+        }
+        if newLocation.horizontalAccuracy < 0 {
+            return
+        }
+        let latitude = String(format: "%.8f", newLocation.coordinate.latitude)
+        let longitude = String(format: "%.8f", newLocation.coordinate.longitude)
+        print("latitude=" + latitude + " --longitude="+longitude)
+        findGeoInfo(newLocation)
+        
+        if newLocation.horizontalAccuracy <= locationManager.desiredAccuracy {
+            print("We are Done!")
+            findGeoInfo(newLocation)
+            stopLocationService()
+        }
+        
+//        performSegue(withIdentifier: "locateSuccess", sender: self)//退出视窗
+    }
+    
+    func locationManager(_ manager: CLLocationManager, didChangeAuthorization status: CLAuthorizationStatus) {
+        if status == .authorizedAlways || status == .authorizedWhenInUse {
+            startLocationService()
+        } else { stopLocationService()
+        }
+    }
+    
+    func findGeoInfo(_ location: CLLocation) {
+        print("*** Going to geocode")
+        geocoder.reverseGeocodeLocation(location, completionHandler: { [weak self] placemarks, error in
+            if let error = error {
+                print("fail with error: \(error)")
+            } else if let placemark = placemarks?.last! {
+                self?.locationAddress = "北京"
+//                print("locationAddress3=" + (self?.getAddress(from: placemark))!)
+//                self?.locationAddress = (self?.getAddress(from: placemark))!
+            } else {
+                print("no address found")
+            }
+        })
+    }
+    
+    func getAddress(from placemark: CLPlacemark?) -> String {
+        var address = ""
+        if let s = placemark?.subThoroughfare {
+            address += s + " ?"
+        }
+        if let s = placemark?.thoroughfare {
+            address += s
+        }
+        address += "\n"
+        if let s = placemark?.locality {//北京市
+            address += s + " !"
+        }
+        if let s = placemark?.administrativeArea {//北京市
+            address += s + " &" }
+        if let s = placemark?.postalCode {
+            address += s
+        }
+        
+        print("address="+address)
+        return (placemark?.locality)!
+        
+//        return address
     }
 }
