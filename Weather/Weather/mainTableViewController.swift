@@ -304,7 +304,7 @@ class mainTableViewController: UITableViewController{
             print("\(cityList.count)"+"cityNameHere~"+cityList[index-1].city_name! + "///"+cityName)
             if self.cityName == cityList[index-1].city_name {// 已有城市，更新
                 print("Updating city information ...")
-                let city = appDelegate?.updateToContext(city: citiesList[index-1], city_name: cityName, image_code: cityImageCode, temperature: cityTemperature)
+                let city = appDelegate?.updateToContext(city: cityList[index-1], city_name: cityName, image_code: cityImageCode, temperature: cityTemperature)
                 return
             }else{// 新加城市，添加。
                 if index == cityList.count {
@@ -390,7 +390,7 @@ class mainTableViewController: UITableViewController{
         {
             let dateLabel = UILabel.init(frame: CGRect.init(x: 60 * Int(index)!, y: 5, width: 60, height: 20));
             dateLabel.font = UIFont.systemFont(ofSize: 16)
-            dateLabel.textColor = UIColor.blue
+            dateLabel.textColor = UIColor.lightGray
             dateLabel.textAlignment = NSTextAlignment.center
             let time = subJson["time"].stringValue
             let range = time.range(of: "T")
