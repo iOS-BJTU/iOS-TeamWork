@@ -28,8 +28,8 @@ class mainTableViewController: UITableViewController{
     @IBOutlet weak var nowAirLabel: UILabel!
     @IBOutlet weak var airLevelLabel: UILabel!
     @IBOutlet weak var airImage: UIImageView!
-    @IBOutlet weak var lifeView: UIView!
-    
+    @IBOutlet weak var lifeView: UIView!    
+    @IBOutlet weak var lifeViewBackground: UIImageView!
 //    var city: CityCD?
     var locationAddress = "北京"
     var cityName = ""
@@ -286,6 +286,15 @@ class mainTableViewController: UITableViewController{
             print("next4")
             if let temp5 = lifeJson["results"][0]["suggestion"].rawString() {
                 // 逐日天气
+                let subViews = self.lifeView.subviews
+                for subview in subViews{
+                    if subview == lifeViewBackground{
+                        
+                    }else{
+                        subview.removeFromSuperview()
+                    }
+                }
+                
                 createLifeView(lifeJson: lifeJson)
                 print(temp5)
                 tableView.reloadData()
@@ -440,6 +449,7 @@ class mainTableViewController: UITableViewController{
     }
     
     func createLifeView (lifeJson : JSON) {
+        lifeViewBackground.image = UIImage.init(named: "background")
         
         let width : CGFloat = SCREEN_WIDTH / 4.0
         let height : CGFloat = width * 0.9
