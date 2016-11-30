@@ -13,8 +13,7 @@ import CoreData
 class AppDelegate: UIResponder, UIApplicationDelegate {
 
     var window: UIWindow?
-
-
+    
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplicationLaunchOptionsKey: Any]?) -> Bool {
         // Override point for customization after application launch.
         return true
@@ -53,7 +52,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
          application to it. This property is optional since there are legitimate
          error conditions that could cause the creation of the store to fail.
         */
-        let container = NSPersistentContainer(name: "Weather")
+        let container = NSPersistentContainer(name: "WeatherCity")
         container.loadPersistentStores(completionHandler: { (storeDescription, error) in
             if let error = error as NSError? {
                 // Replace this implementation with code to handle the error appropriately.
@@ -88,6 +87,45 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
             }
         }
     }
+    
+    
+     func addToContext(city_name: String,
+                      image_code: String?, temperature: String?) -> CityCD {
+        let city = CityCD(context: persistentContainer.viewContext)
+        city.city_name = city_name
+        city.image_code = image_code
+        city.temperature = temperature
+
+        print("Saving new city to context ...")
+        saveContext()
+        
+        return city
+    }
+    
+    func fetchContext() -> [CityCD]? {
+        var fetchedList:[CityCD]? = nil
+        do {
+            fetchedList = try persistentContainer.viewContext.fetch(CityCD.fetchRequest()) as?[CityCD]
+        } catch {
+            print("Failed to fetch cities: \(error)")
+        }
+        return fetchedList
+    }
+    
+    func deleteFromContext(city: CityCD) { persistentContainer.viewContext.delete(city)
+        print("deleting the city from context ...")
+        saveContext()
+    }
+    
+    func updateToContext(city: CityCD, city_name: String,
+                         image_code: String?, temperature: String?) {
+        city.city_name = city_name
+        city.image_code = image_code
+        city.temperature = temperature
+        print("updating the city to context ...")
+        saveContext()
+    }
+    
 
 }
 

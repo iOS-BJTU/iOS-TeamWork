@@ -10,6 +10,7 @@ import UIKit
 import CoreLocation
 
 class AddCityViewController: UIViewController , CLLocationManagerDelegate{
+    var city: CityCD?
     var cityName = "??"
     let locationManager = CLLocationManager()
     let geocoder = CLGeocoder()

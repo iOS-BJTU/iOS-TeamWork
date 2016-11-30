@@ -10,6 +10,11 @@ import UIKit
 import SwiftyJSON
 import Charts
 
+
+let SCREEN_WIDTH = UIScreen.main.bounds.size.width
+let SCREEN_HEIGHT = UIScreen.main.bounds.size.height
+let AutoSizeScaleY = (SCREEN_HEIGHT-64)/(667-64)
+
 class mainTableViewController: UITableViewController{
     @IBOutlet weak var lineChartViewHigh: LineChartView!
     @IBOutlet weak var lineChartViewLow: LineChartView!
@@ -23,12 +28,20 @@ class mainTableViewController: UITableViewController{
     @IBOutlet weak var nowAirLabel: UILabel!
     @IBOutlet weak var airLevelLabel: UILabel!
     @IBOutlet weak var airImage: UIImageView!
+    @IBOutlet weak var lifeView: UIView!
     
+//    var city: CityCD?
     var locationAddress = "北京"
-    var cityName = "北京"
+    var cityName = ""
+    var cityTemperature = "0°C"
+    var cityImageCode = "0"
     var days = [String]()
     var highDegree = [Int]()
     var lowDegree = [Int]()
+    let appDelegate = UIApplication.shared.delegate as? AppDelegate
+    var cityNames = ["牡丹江"]
+    var citiesList = [CityCD]()
+    
     override func viewDidLoad() {
         super.viewDidLoad()
 
@@ -38,7 +51,24 @@ class mainTableViewController: UITableViewController{
         // Uncomment the following line to display an Edit button in the navigation bar for this view controller.
         // self.navigationItem.rightBarButtonItem = self.editButtonItem()
         
-        loadWeather(city: "北京")
+        if let appDelegate = (UIApplication.shared.delegate as? AppDelegate) {
+            if !FileManager().fileExists(atPath:CityCD.StoreURL.path) {
+                for name in cityNames {
+                    let city = appDelegate.addToContext(city_name: name, image_code: "0", temperature: "0")
+                    citiesList.append(city)
+                }
+                cityName = citiesList[0].city_name!
+            } else {
+                if let fetchedList = appDelegate.fetchContext() {
+                    citiesList += fetchedList
+                }
+                cityName = citiesList[0].city_name!
+            }
+        }
+        
+        self.navigationItem.title = cityName
+        loadWeather(cityInfo: cityName)
+//        loadWeather(cityInfo: "北京")
         // 计算屏幕长宽
         let screenWidth = UIScreen.main.bounds.size.width
         let screenHeight = UIScreen.main.bounds.size.height        
@@ -51,7 +81,7 @@ class mainTableViewController: UITableViewController{
         automaticallyAdjustsScrollViewInsets = false
         tableView.addExRefresh {
             print("cityName=?="+self.cityName)
-            self.loadWeather(city: self.cityName)
+            self.loadWeather(cityInfo: self.cityName)
             self.perform(#selector(self.afterMethod), with: nil, afterDelay: 3, inModes: [RunLoopMode.commonModes])
         }
         
@@ -188,8 +218,8 @@ class mainTableViewController: UITableViewController{
         
     }
 
-    func loadWeather(city: String){
-        let cityname = city.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed)!
+    func loadWeather(cityInfo: String){
+        let cityname = cityInfo.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed)!
         
         let nowStr = "https://api.thinkpage.cn/v3/weather/now.json?key=stgqeqzd7smkfdzn&location=\(cityname)&language=zh-Hans&unit=c"
         let hourStr = "https://api.thinkpage.cn/v3/weather/hourly.json?key=stgqeqzd7smkfdzn&location=\(cityname)&language=zh-Hans&unit=c&start=0&hours=24"
@@ -256,7 +286,7 @@ class mainTableViewController: UITableViewController{
             print("next4")
             if let temp5 = lifeJson["results"][0]["suggestion"].rawString() {
                 // 逐日天气
-//                setLifeData(lifeJson: lifeJson)
+                createLifeView(lifeJson: lifeJson)
                 print(temp5)
                 tableView.reloadData()
             }else {
@@ -264,6 +294,25 @@ class mainTableViewController: UITableViewController{
                 print("www")
             }
         }catch{}
+
+        
+        var cityList = [CityCD]()
+        if let fetchedList = appDelegate?.fetchContext() {
+            cityList = fetchedList
+        }
+        for index in 1...cityList.count {
+            print("\(cityList.count)"+"cityNameHere~"+cityList[index-1].city_name! + "///"+cityName)
+            if self.cityName == cityList[index-1].city_name {// 已有城市，更新
+                print("Updating city information ...")
+                let city = appDelegate?.updateToContext(city: citiesList[index-1], city_name: cityName, image_code: cityImageCode, temperature: cityTemperature)
+                return
+            }else{// 新加城市，添加。
+                if index == cityList.count {
+                    print("Adding city information ...")
+                    let city = appDelegate?.addToContext(city_name: cityName, image_code: cityImageCode, temperature: cityTemperature)
+                }
+            }
+        }
     }
     
     
@@ -273,6 +322,8 @@ class mainTableViewController: UITableViewController{
         windScaleLabel.text = weatherJson["results"][0]["now"]["wind_scale"].rawString()
         humidityLabel.text = weatherJson["results"][0]["now"]["humidity"].rawString()
         weatherImage.image = UIImage.init(named: weatherJson["results"][0]["now"]["code"].rawString()!)
+        
+        cityImageCode = weatherJson["results"][0]["now"]["code"].rawString()!
     }
     
     func setAirData (airJson : JSON) {
@@ -310,6 +361,7 @@ class mainTableViewController: UITableViewController{
         let todayHigh = dailyJson["results"][0]["daily"][0]["high"].rawString()
         let todayLow = dailyJson["results"][0]["daily"][0]["low"].rawString()
         nowTempratureLabel.text = todayLow! + "/" + todayHigh! + "°C"
+        cityTemperature = todayLow! + "/" + todayHigh! + "°C"
         lowDegree.removeAll()
         highDegree.removeAll()
         days.removeAll()
@@ -338,7 +390,7 @@ class mainTableViewController: UITableViewController{
         {
             let dateLabel = UILabel.init(frame: CGRect.init(x: 60 * Int(index)!, y: 5, width: 60, height: 20));
             dateLabel.font = UIFont.systemFont(ofSize: 16)
-            dateLabel.textColor = UIColor.lightGray
+            dateLabel.textColor = UIColor.blue
             dateLabel.textAlignment = NSTextAlignment.center
             let time = subJson["time"].stringValue
             let range = time.range(of: "T")
@@ -385,6 +437,61 @@ class mainTableViewController: UITableViewController{
             print("\(index)：\(subJson)")
         }
         hourScrollView.contentSize = CGSize.init(width: 60 * (hourJson["results"][0]["hourly"].array?.count)!, height: 0)
+    }
+    
+    func createLifeView (lifeJson : JSON) {
+        
+        let width : CGFloat = SCREEN_WIDTH / 4.0
+        let height : CGFloat = width * 0.9
+        var y : CGFloat = 5.0
+        
+        for index in 0..<8 {
+            let bgView = UIView.init(frame: CGRect.init(x: SCREEN_WIDTH / 4.0 * CGFloat(index % 4), y: y, width: width, height: height))
+            lifeView .addSubview(bgView)
+            
+            let titleImageView = UIImageView.init(frame: CGRect.init(x: (width - 32) / 2.0, y: AutoSizeY(size: 10), width: 30, height: 30));
+            bgView.addSubview(titleImageView)
+            
+            let titleLabel = UILabel.init(frame: CGRect.init(x: 0, y: titleImageView.frame.maxY + AutoSizeY(size: 10), width: width, height: 16))
+            titleLabel.textAlignment = NSTextAlignment.center
+            titleLabel.font = UIFont.systemFont(ofSize: 13)
+            titleLabel.textColor = UIColor.white
+            bgView .addSubview(titleLabel)
+            
+            switch index {
+            case 0:
+                titleImageView.image = UIImage.init(named: "icon_clothes")
+                titleLabel.text = NSString.init(format: "天气%@", lifeJson["results"][0]["suggestion"]["dressing"]["brief"].rawString()!) as String
+            case 1:
+                titleImageView.image = UIImage.init(named: "icon_umbrella")
+                titleLabel.text = lifeJson["results"][0]["suggestion"]["umbrella"]["brief"].rawString()
+            case 2:
+                titleImageView.image = UIImage.init(named: "icon_getcold")
+                titleLabel.text = NSString.init(format: "%@感冒", lifeJson["results"][0]["suggestion"]["flu"]["brief"].rawString()!) as String
+            case 3:
+                titleImageView.image = UIImage.init(named: "icon_guomin")
+                titleLabel.text = NSString.init(format: "%@过敏", lifeJson["results"][0]["suggestion"]["allergy"]["brief"].rawString()!) as String
+            case 4:
+                titleImageView.image = UIImage.init(named: "icon_exercise")
+                titleLabel.text = NSString.init(format: "%@晨练", lifeJson["results"][0]["suggestion"]["morning_sport"]["brief"].rawString()!) as String
+            case 5:
+                titleImageView.image = UIImage.init(named: "icon_ultra")
+                titleLabel.text = NSString.init(format: "紫外线%@", lifeJson["results"][0]["suggestion"]["uv"]["brief"].rawString()!) as String
+            case 6:
+                titleImageView.image = UIImage.init(named: "icon_shai")
+                titleLabel.text = NSString.init(format: "%@晾晒", lifeJson["results"][0]["suggestion"]["airing"]["brief"].rawString()!) as String
+            case 7:
+                titleImageView.image = UIImage.init(named: "icon_car")
+                titleLabel.text = NSString.init(format: "%@洗车", lifeJson["results"][0]["suggestion"]["car_washing"]["brief"].rawString()!) as String
+            default:
+                print("default")
+            }
+            
+            if index == 3 {
+                y = height
+            }
+            print("\(index) times 5 is \(index * 5)")
+        }
     }
 
     // MARK: - Table view data source
@@ -464,62 +571,62 @@ class mainTableViewController: UITableViewController{
             cityName = detailVC.cityName
             print("cityName=="+cityName)
             self.navigationItem.title = cityName
-            loadWeather(city: "北京")
+            loadWeather(cityInfo: "北京")
         }
         // 查询显示天津天气
         if segue.identifier == "tianjinExit", let detailVC = segue.source as? AddCityViewController{
-            cityName = detailVC.cityName
+            self.cityName = detailVC.cityName
             print("cityName=="+cityName)
             self.navigationItem.title = cityName
-            loadWeather(city: "天津")
+            loadWeather(cityInfo: "天津")
         }
         // 查询显示上海天气
         if segue.identifier == "shanghaiExit", let detailVC = segue.source as? AddCityViewController{
-            cityName = detailVC.cityName
+            self.cityName = detailVC.cityName
             print("cityName=="+cityName)
             self.navigationItem.title = cityName
-            loadWeather(city: "上海")
+            loadWeather(cityInfo: "上海")
         }
         // 查询显示广州天气
         if segue.identifier == "guangzhouExit", let detailVC = segue.source as? AddCityViewController{
-            cityName = detailVC.cityName
+            self.cityName = detailVC.cityName
             print("cityName=="+cityName)
             self.navigationItem.title = cityName
-            loadWeather(city: "广州")
+            loadWeather(cityInfo: "广州")
         }
         // 查询显示深圳天气
         if segue.identifier == "shenzhenExit", let detailVC = segue.source as? AddCityViewController{
-            cityName = detailVC.cityName
+            self.cityName = detailVC.cityName
             print("cityName=="+cityName)
             self.navigationItem.title = cityName
-            loadWeather(city: "深圳")
+            loadWeather(cityInfo: "深圳")
         }
         
         if segue.identifier == "showWhetherFromCityList", let detailVC = segue.source as? CityListTableViewController{
-            cityName = detailVC.cityName
+            self.cityName = detailVC.cityName
             print("cityName=="+cityName)
             self.navigationItem.title = cityName
-            loadWeather(city: cityName)
+            loadWeather(cityInfo: cityName)
         }
         
         if segue.identifier == "searchCity", let detailVC = segue.source as? AddCityViewController{
-            cityName = detailVC.cityName
+            self.cityName = detailVC.cityName
             print("cityName=="+cityName)
             self.navigationItem.title = cityName
-            loadWeather(city: cityName)
+            loadWeather(cityInfo: cityName)
         }
         
         if segue.identifier == "locateSuccess", let detailVC = segue.source as? AddCityViewController
             {
             let location = detailVC.locationAddress
-            self.cityName = location
+            self.self.cityName = location
             print("locationAddress0=="+cityName)
             self.navigationItem.title = cityName
-            loadWeather(city: cityName)
-//            saveList()
+            loadWeather(cityInfo: cityName)
         }
 
     }
 
+    func AutoSizeY (size:CGFloat) -> CGFloat { return CGFloat (AutoSizeScaleY * size)}
 
 }
