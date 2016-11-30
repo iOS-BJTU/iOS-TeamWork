@@ -41,8 +41,11 @@ class mainTableViewController: UITableViewController{
     let appDelegate = UIApplication.shared.delegate as? AppDelegate
     var cityNames = ["牡丹江"]
     var citiesList = [CityCD]()
-    var weather: Weather?
-    var weatehrlist = [Weather("now","https://api.thinkpage.cn/v3/weather/now.json?key=stgqeqzd7smkfdzn&location=beijing&language=zh-Hans&unit=c")]
+    var now: Now?
+    var hour: Hour?
+    var air: Air?
+    var daily: Daily?
+    var life: Life?
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -223,89 +226,22 @@ class mainTableViewController: UITableViewController{
     func loadWeather(cityInfo: String){
         let cityname = cityInfo.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed)!
         
-        let nowStr = "https://api.thinkpage.cn/v3/weather/now.json?key=stgqeqzd7smkfdzn&location=\(cityname)&language=zh-Hans&unit=c"
-        let hourStr = "https://api.thinkpage.cn/v3/weather/hourly.json?key=stgqeqzd7smkfdzn&location=\(cityname)&language=zh-Hans&unit=c&start=0&hours=24"
-        let airStr = "https://api.thinkpage.cn/v3/air/now.json?key=stgqeqzd7smkfdzn&location=\(cityname)&language=zh-Hans&scope=city"
-        let dailyStr = "https://api.thinkpage.cn/v3/weather/daily.json?key=stgqeqzd7smkfdzn&location=\(cityname)&language=zh-Hans&unit=c&start=0&days=7"
-        let lifeStr = "https://api.thinkpage.cn/v3/life/suggestion.json?key=stgqeqzd7smkfdzn&location=\(cityname)&language=zh-Hans"
+        now = Now("now","https://api.thinkpage.cn/v3/weather/now.json?key=stgqeqzd7smkfdzn&location=\(cityname)&language=zh-Hans&unit=c")
+        now?.jsondata
+        hour = Hour("hour","https://api.thinkpage.cn/v3/weather/hourly.json?key=stgqeqzd7smkfdzn&location=\(cityname)&language=zh-Hans&unit=c&start=0&hours=24")
+        hour?.jsondata
+        air = Air("air","https://api.thinkpage.cn/v3/air/now.json?key=stgqeqzd7smkfdzn&location=\(cityname)&language=zh-Hans&scope=city")
+        air?.jsondata
+        daily = Daily("daily","https://api.thinkpage.cn/v3/weather/daily.json?key=stgqeqzd7smkfdzn&location=\(cityname)&language=zh-Hans&unit=c&start=0&days=7")
+        daily?.jsondata
+        life = Life("life","https://api.thinkpage.cn/v3/life/suggestion.json?key=stgqeqzd7smkfdzn&location=\(cityname)&language=zh-Hans")
+        life?.jsondata
         
-        let nowUrl = URL(string: nowStr)
-        let hourUrl = URL(string: hourStr)
-        let airUrl = URL(string: airStr)
-        let dailyUrl = URL(string: dailyStr)
-        let lifeUrl = URL(string: lifeStr)
-        
-        do{
-            let nowJsonData = try NSData(contentsOf: nowUrl!, options: NSData.ReadingOptions.uncached)
-            let hourJsonDate = try NSData(contentsOf: hourUrl!, options: NSData.ReadingOptions.uncached)
-            let airJsonData = try NSData(contentsOf: airUrl!, options: NSData.ReadingOptions.uncached)
-            let dailyJsonData = try NSData(contentsOf: dailyUrl!, options: NSData.ReadingOptions.uncached)
-            let lifeJsonData = try NSData(contentsOf: lifeUrl!, options: NSData.ReadingOptions.uncached)
-            let nowJson = JSON(data: nowJsonData as Data)
-            let hourJson = JSON(data: hourJsonDate as Data)
-            let airJson = JSON(data: airJsonData as Data)
-            let dailyJson = JSON(data: dailyJsonData as Data)
-            let lifeJson = JSON(data: lifeJsonData as Data)
-            if let temp = nowJson["results"][0]["now"].rawString() {
-                // 当前天气实况
-                print("temp=" + temp)
-                self.setMainData(weatherJson: nowJson)
-            }else {
-                // 打印错误信息
-                print("www")
-            }
-            print("next")
-            if let temp2 = hourJson["results"][0]["hourly"][0].rawString() {
-                // 24小时天气
-                let subViews = self.hourScrollView.subviews
-                for subview in subViews{
-                    subview.removeFromSuperview()
-                }
-                self.createHourWeatherView(hourJson: hourJson)
-                print(temp2)
-            }else {
-                // 打印错误信息
-                print("www")
-            }
-            print("next2")
-            if let temp3 = airJson["results"][0]["air"].rawString() {
-                // 空气质量
-                print(temp3)
-                self.setAirData(airJson: airJson)
-            }else {
-                // 打印错误信息
-                print("www")
-            }
-            print("next3")
-            if let temp4 = dailyJson["results"][0]["daily"][0].rawString() {
-                // 逐日天气
-                setDailyWeatherData(dailyJson: dailyJson)
-                print(temp4)
-            }else {
-                // 打印错误信息
-                print("www")
-            }
-            print("next4")
-            if let temp5 = lifeJson["results"][0]["suggestion"].rawString() {
-                // 逐日天气
-                let subViews = self.lifeView.subviews
-                for subview in subViews{
-                    if subview == lifeViewBackground{
-                        
-                    }else{
-                        subview.removeFromSuperview()
-                    }
-                }
-                
-                createLifeView(lifeJson: lifeJson)
-                print(temp5)
-                tableView.reloadData()
-            }else {
-                // 打印错误信息
-                print("www")
-            }
-        }catch{}
-
+        NotificationCenter.default.addObserver(self, selector: #selector(getNow), name: NSNotification.Name("GetNow"), object: now)
+        NotificationCenter.default.addObserver(self, selector: #selector(getHour), name: NSNotification.Name("GetHour"), object: hour)
+        NotificationCenter.default.addObserver(self, selector: #selector(getAir), name: NSNotification.Name("GetAir"), object: air)
+        NotificationCenter.default.addObserver(self, selector: #selector(getDaily), name: NSNotification.Name("GetDaily"), object: daily)
+        NotificationCenter.default.addObserver(self, selector: #selector(getLife), name: NSNotification.Name("GetLife"), object: life)
         
         var cityList = [CityCD]()
         if let fetchedList = appDelegate?.fetchContext() {
@@ -326,25 +262,43 @@ class mainTableViewController: UITableViewController{
         }
     }
     
-    override func viewWillDisappear(_ animated: Bool) {
-        super.viewWillDisappear(animated)
-        NotificationCenter.default.removeObserver(self)
-    }
-    
-    override func viewWillAppear(_ animated: Bool) {
-        super.viewWillAppear(animated)
-        //self.imageView.image = weather?.jsondata
-        //self.imageView.sizeToFit()
-        //self.scrollView.contentSize = self.imageView.bounds.size
-        NotificationCenter.default.addObserver(self, selector: #selector(imageFetched), name: NSNotification.Name("ImageFetched"), object: weather)
-    }
-    
-    func imageFetched(notification: Notification) {
-        let nowJson = JSON(data: (weather?.jsondata)! as Data)
-        print(nowJson)
+    func getNow(notification: Notification) {
+        let nowJson = JSON(data: (now?.jsondata)! as Data)
         self.setMainData(weatherJson: nowJson)
     }
     
+    func getHour(notification: Notification) {
+        let hourJson = JSON(data: (hour?.jsondata)! as Data)
+        let subViews = self.hourScrollView.subviews
+        for subview in subViews{
+            subview.removeFromSuperview()
+        }
+        self.createHourWeatherView(hourJson: hourJson)
+    }
+    
+    func getAir(notification: Notification) {
+        let airJson = JSON(data: (air?.jsondata)! as Data)
+        self.setAirData(airJson: airJson)
+    }
+    
+    func getDaily(notification: Notification) {
+        let dailyJson = JSON(data: (daily?.jsondata)! as Data)
+        self.setDailyWeatherData(dailyJson: dailyJson)
+    }
+    
+    func getLife(notification: Notification) {
+        let lifeJson = JSON(data: (life?.jsondata)! as Data)
+        let subViews = self.lifeView.subviews
+        for subview in subViews{
+            if subview == lifeViewBackground{
+        
+            }else{
+                subview.removeFromSuperview()
+            }
+        }
+        self.createLifeView(lifeJson: lifeJson)
+        tableView.reloadData()
+    }
     
     func setMainData (weatherJson : JSON) {
         tempratureLabel.text = NSString.init(format: "%@°C", weatherJson["results"][0]["now"]["temperature"].rawString()!) as String

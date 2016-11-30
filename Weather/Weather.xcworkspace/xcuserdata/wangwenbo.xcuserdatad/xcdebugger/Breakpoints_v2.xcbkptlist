@@ -10,12 +10,12 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "Weather/mainTableViewController.swift"
-            timestampString = "502205751.475816"
+            timestampString = "502217229.600398"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "340"
-            endingLineNumber = "340"
-            landmarkName = "setMainData(weatherJson:)"
+            startingLineNumber = "80"
+            endingLineNumber = "80"
+            landmarkName = "viewDidLoad()"
             landmarkType = "7">
          </BreakpointContent>
       </BreakpointProxy>
@@ -26,12 +26,12 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "Weather/mainTableViewController.swift"
-            timestampString = "502205751.475816"
+            timestampString = "502217586.205951"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "77"
-            endingLineNumber = "77"
-            landmarkName = "viewDidLoad()"
+            startingLineNumber = "266"
+            endingLineNumber = "266"
+            landmarkName = "getNow(notification:)"
             landmarkType = "7">
          </BreakpointContent>
       </BreakpointProxy>
