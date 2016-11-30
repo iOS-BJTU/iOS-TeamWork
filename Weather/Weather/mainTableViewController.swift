@@ -41,6 +41,8 @@ class mainTableViewController: UITableViewController{
     let appDelegate = UIApplication.shared.delegate as? AppDelegate
     var cityNames = ["牡丹江"]
     var citiesList = [CityCD]()
+    var weather: Weather?
+    var weatehrlist = [Weather("now","https://api.thinkpage.cn/v3/weather/now.json?key=stgqeqzd7smkfdzn&location=beijing&language=zh-Hans&unit=c")]
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -324,6 +326,25 @@ class mainTableViewController: UITableViewController{
         }
     }
     
+    override func viewWillDisappear(_ animated: Bool) {
+        super.viewWillDisappear(animated)
+        NotificationCenter.default.removeObserver(self)
+    }
+    
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        //self.imageView.image = weather?.jsondata
+        //self.imageView.sizeToFit()
+        //self.scrollView.contentSize = self.imageView.bounds.size
+        NotificationCenter.default.addObserver(self, selector: #selector(imageFetched), name: NSNotification.Name("ImageFetched"), object: weather)
+    }
+    
+    func imageFetched(notification: Notification) {
+        let nowJson = JSON(data: (weather?.jsondata)! as Data)
+        print(nowJson)
+        self.setMainData(weatherJson: nowJson)
+    }
+    
     
     func setMainData (weatherJson : JSON) {
         tempratureLabel.text = NSString.init(format: "%@°C", weatherJson["results"][0]["now"]["temperature"].rawString()!) as String
@@ -503,8 +524,7 @@ class mainTableViewController: UITableViewController{
             print("\(index) times 5 is \(index * 5)")
         }
     }
-
-    // MARK: - Table view data source
+// MARK: - Table view data source
 
 //    override func numberOfSections(in tableView: UITableView) -> Int {
 //        // #warning Incomplete implementation, return the number of sections
