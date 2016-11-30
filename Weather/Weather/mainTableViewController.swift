@@ -312,7 +312,16 @@ class mainTableViewController: UITableViewController{
         highDegree.removeAll()
         days.removeAll()
         for var i in 0..<dailyJson["results"][0]["daily"].count{
-            days.append(dailyJson["results"][0]["daily"][i]["date"].rawString()!)
+            if i == 0 {
+                days.append("今天")
+            }else if i == 1{
+                days.append("明天")
+            }else if i == 2{
+                days.append("后天")
+            }else{
+                let date = dailyJson["results"][0]["daily"][i]["date"].rawString()?.index((dailyJson["results"][0]["daily"][i]["date"].rawString()?.endIndex)!, offsetBy: -5)
+                days.append((dailyJson["results"][0]["daily"][i]["date"].rawString()?.substring(from: date!))!)
+            }
             lowDegree.append(Int(dailyJson["results"][0]["daily"][i]["low"].rawString()!)!)
             highDegree.append(Int(dailyJson["results"][0]["daily"][i]["high"].rawString()!)!)
             i += 1
