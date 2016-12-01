@@ -2,8 +2,8 @@
 //  ExtraView.swift
 //  LayerTest2
 //
-//  Created by rxj on 2016/11/18.
-//  Copyright © 2016年 renxiaojian. All rights reserved.
+//  Created by ts on 2016/11/28.
+//  Copyright © 2016年 ts. All rights reserved.
 //
 
 import UIKit
