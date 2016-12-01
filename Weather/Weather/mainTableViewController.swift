@@ -33,7 +33,8 @@ class mainTableViewController: UITableViewController{
 //    var city: CityCD?
     var locationAddress = "北京"
     var cityName = ""
-    var cityTemperature = "0°C"
+//    var cityTemperature = "0°C"
+    var cityTemperature = "0@"
     var cityImageCode = "0"
     var days = [String]()
     var highDegree = [Int]()
@@ -59,7 +60,7 @@ class mainTableViewController: UITableViewController{
         if let appDelegate = (UIApplication.shared.delegate as? AppDelegate) {
             if !FileManager().fileExists(atPath:CityCD.StoreURL.path) {
                 for name in cityNames {
-                    let city = appDelegate.addToContext(city_name: name, image_code: "0", temperature: "0")
+                    let city = appDelegate.addToContext(city_name: name, image_code: "0", temperature: "0~")
                     citiesList.append(city)
                 }
                 cityName = citiesList[0].city_name!
@@ -73,14 +74,10 @@ class mainTableViewController: UITableViewController{
         
         self.navigationItem.title = cityName
         loadWeather(cityInfo: cityName)
-//        loadWeather(cityInfo: "北京")
-        // 计算屏幕长宽
-        let screenWidth = UIScreen.main.bounds.size.width
-        let screenHeight = UIScreen.main.bounds.size.height        
         
         self.edgesForExtendedLayout = .bottom
         
-        tableView.estimatedRowHeight = screenHeight
+        tableView.estimatedRowHeight = SCREEN_HEIGHT
 
         //下拉刷新
         automaticallyAdjustsScrollViewInsets = false
@@ -242,24 +239,6 @@ class mainTableViewController: UITableViewController{
         NotificationCenter.default.addObserver(self, selector: #selector(getAir), name: NSNotification.Name("GetAir"), object: air)
         NotificationCenter.default.addObserver(self, selector: #selector(getDaily), name: NSNotification.Name("GetDaily"), object: daily)
         NotificationCenter.default.addObserver(self, selector: #selector(getLife), name: NSNotification.Name("GetLife"), object: life)
-        
-        var cityList = [CityCD]()
-        if let fetchedList = appDelegate?.fetchContext() {
-            cityList = fetchedList
-        }
-        for index in 1...cityList.count {
-            print("\(cityList.count)"+"cityNameHere~"+cityList[index-1].city_name! + "///"+cityName)
-            if self.cityName == cityList[index-1].city_name {// 已有城市，更新
-                print("Updating city information ...")
-                let city = appDelegate?.updateToContext(city: cityList[index-1], city_name: cityName, image_code: cityImageCode, temperature: cityTemperature)
-                return
-            }else{// 新加城市，添加。
-                if index == cityList.count {
-                    print("Adding city information ...")
-                    let city = appDelegate?.addToContext(city_name: cityName, image_code: cityImageCode, temperature: cityTemperature)
-                }
-            }
-        }
     }
     
     func getNow(notification: Notification) {
@@ -297,6 +276,7 @@ class mainTableViewController: UITableViewController{
             }
         }
         self.createLifeView(lifeJson: lifeJson)
+        
         tableView.reloadData()
     }
     
@@ -345,7 +325,7 @@ class mainTableViewController: UITableViewController{
         let todayHigh = dailyJson["results"][0]["daily"][0]["high"].rawString()
         let todayLow = dailyJson["results"][0]["daily"][0]["low"].rawString()
         nowTempratureLabel.text = todayLow! + "/" + todayHigh! + "°C"
-        cityTemperature = todayLow! + "/" + todayHigh! + "°C"
+        self.cityTemperature = todayLow! + "/" + todayHigh! + "°C"
         lowDegree.removeAll()
         highDegree.removeAll()
         days.removeAll()
@@ -366,6 +346,25 @@ class mainTableViewController: UITableViewController{
         }
         setChartHigh(dataPoints: days, values: highDegree)
         setChartLow(dataPoints: days, values: lowDegree)
+        
+        
+        var cityList = [CityCD]()
+        if let fetchedList = appDelegate?.fetchContext() {
+            cityList = fetchedList
+        }
+        for index in 1...cityList.count {
+            print("\(cityList.count)"+"cityNameHere~"+cityList[index-1].city_name! + "///"+cityName+"??"+cityList[index-1].temperature!)
+            if self.cityName == cityList[index-1].city_name {// 已有城市，更新
+                print("Updating city information ..." + self.cityName)
+                let city = appDelegate?.updateToContext(city: cityList[index-1], city_name: cityName, image_code: cityImageCode, temperature: self.cityTemperature)
+                return
+            }else{// 新加城市，添加。
+                if index == cityList.count {
+                    print("Adding city information ...")
+                    let city = appDelegate?.addToContext(city_name: cityName, image_code: cityImageCode, temperature: self.cityTemperature)
+                }
+            }
+        }
     }
     
     func createHourWeatherView (hourJson : JSON) {

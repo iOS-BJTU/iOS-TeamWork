@@ -26,7 +26,7 @@ class CityListTableViewController: UITableViewController {
         if let appDelegate = (UIApplication.shared.delegate as? AppDelegate) {
             if !FileManager().fileExists(atPath:CityCD.StoreURL.path) {
                 for name in cityNames {
-                    let city = appDelegate.addToContext(city_name: name, image_code: "0", temperature: "0")
+                    let city = appDelegate.addToContext(city_name: name, image_code: "0", temperature: "0!")
                     citiesList.append(city)
                 }
             } else {
