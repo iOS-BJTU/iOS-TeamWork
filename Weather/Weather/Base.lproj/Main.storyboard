@@ -6,8 +6,6 @@
     <dependencies>
         <deployment identifier="iOS"/>
         <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="11755"/>
-        <capability name="Alignment constraints to the first baseline" minToolsVersion="6.0"/>
-        <capability name="Alignment constraints with different attributes" minToolsVersion="5.1"/>
         <capability name="Constraints to layout margins" minToolsVersion="6.0"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
@@ -105,7 +103,7 @@
         <!--北京-->
         <scene sceneID="hfi-bP-k44">
             <objects>
-                <tableViewController id="zln-WH-sj3" customClass="mainTableViewController" customModule="Weather" customModuleProvider="target" sceneMemberID="viewController">
+                <tableViewController id="zln-WH-sj3" customClass="MainTableViewController" customModule="Weather" customModuleProvider="target" sceneMemberID="viewController">
                     <tableView key="view" clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="static" style="plain" separatorStyle="default" rowHeight="44" sectionHeaderHeight="28" sectionFooterHeight="28" id="8Ie-xs-oIW">
                         <rect key="frame" x="0.0" y="0.0" width="320" height="568"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
@@ -429,7 +427,7 @@
                 </tableViewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="Pze-lY-yQI" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="-1074.375" y="844.0140845070423"/>
+            <point key="canvasLocation" x="-1001" y="51"/>
         </scene>
         <!--Navigation Controller-->
         <scene sceneID="uPk-i1-Saw">
@@ -445,137 +443,7 @@
                 </navigationController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="hbk-pa-xG4" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="-1914" y="846"/>
-        </scene>
-        <!--Edit City List Table View Controller-->
-        <scene sceneID="cTZ-EM-J7W">
-            <objects>
-                <tableViewController id="WUK-qi-sFg" customClass="EditCityListTableViewController" customModule="Weather" customModuleProvider="target" sceneMemberID="viewController">
-                    <tableView key="view" clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="plain" separatorStyle="default" rowHeight="61" sectionHeaderHeight="28" sectionFooterHeight="28" id="uit-pz-R4O">
-                        <rect key="frame" x="0.0" y="0.0" width="320" height="568"/>
-                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
-                        <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
-                        <prototypes>
-                            <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" selectionStyle="default" indentationWidth="10" reuseIdentifier="EditCityCell" rowHeight="60" id="7it-4Q-VI6" userLabel="EditCityCell" customClass="EditCityListTableViewCell" customModule="Weather" customModuleProvider="target">
-                                <rect key="frame" x="0.0" y="28" width="320" height="60"/>
-                                <autoresizingMask key="autoresizingMask"/>
-                                <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="7it-4Q-VI6" id="8e4-df-boo">
-                                    <rect key="frame" x="0.0" y="0.0" width="320" height="59.5"/>
-                                    <autoresizingMask key="autoresizingMask"/>
-                                    <subviews>
-                                        <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="-18/-29°C" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="Eu1-Nd-09B">
-                                            <rect key="frame" x="188" y="20" width="80" height="20"/>
-                                            <constraints>
-                                                <constraint firstAttribute="width" constant="80" id="89s-QH-tL9"/>
-                                            </constraints>
-                                            <fontDescription key="fontDescription" type="system" pointSize="16"/>
-                                            <nil key="textColor"/>
-                                            <nil key="highlightedColor"/>
-                                        </label>
-                                        <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="北京" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="b03-cT-rei">
-                                            <rect key="frame" x="76" y="18" width="37" height="23"/>
-                                            <fontDescription key="fontDescription" type="system" pointSize="18"/>
-                                            <nil key="textColor"/>
-                                            <nil key="highlightedColor"/>
-                                        </label>
-                                        <imageView userInteractionEnabled="NO" contentMode="scaleToFill" verticalHuggingPriority="251" image="location_icon" translatesAutoresizingMaskIntoConstraints="NO" id="01D-iQ-Pnc">
-                                            <rect key="frame" x="51" y="17" width="25" height="25"/>
-                                            <constraints>
-                                                <constraint firstAttribute="width" constant="25" id="PNo-15-dqK"/>
-                                            </constraints>
-                                        </imageView>
-                                        <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="252" verticalHuggingPriority="251" image="icon_edit_delete" translatesAutoresizingMaskIntoConstraints="NO" id="XUN-V0-3YN">
-                                            <rect key="frame" x="8" y="17" width="25" height="25"/>
-                                            <constraints>
-                                                <constraint firstAttribute="width" constant="25" id="q4E-aX-r8H"/>
-                                                <constraint firstAttribute="height" constant="25" id="t6c-KN-61i"/>
-                                            </constraints>
-                                        </imageView>
-                                        <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="menu" translatesAutoresizingMaskIntoConstraints="NO" id="h5v-B1-VbW">
-                                            <rect key="frame" x="288" y="19" width="22" height="22"/>
-                                            <constraints>
-                                                <constraint firstAttribute="height" constant="22" id="HEF-Cf-tbd"/>
-                                                <constraint firstAttribute="width" constant="22" id="r66-CW-jXM"/>
-                                            </constraints>
-                                        </imageView>
-                                        <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="0" translatesAutoresizingMaskIntoConstraints="NO" id="c4N-Gy-iaM">
-                                            <rect key="frame" x="145" y="16" width="28" height="28"/>
-                                            <constraints>
-                                                <constraint firstAttribute="height" constant="28" id="7uv-Sb-Tdr"/>
-                                                <constraint firstAttribute="width" constant="28" id="hc2-vN-2b3"/>
-                                            </constraints>
-                                        </imageView>
-                                    </subviews>
-                                    <constraints>
-                                        <constraint firstItem="XUN-V0-3YN" firstAttribute="centerY" secondItem="8e4-df-boo" secondAttribute="centerY" id="10d-Ig-TJb"/>
-                                        <constraint firstItem="XUN-V0-3YN" firstAttribute="centerY" secondItem="8e4-df-boo" secondAttribute="centerY" id="1OJ-3H-fmd"/>
-                                        <constraint firstItem="h5v-B1-VbW" firstAttribute="centerY" secondItem="8e4-df-boo" secondAttribute="centerY" id="5hw-8z-GgZ"/>
-                                        <constraint firstItem="Eu1-Nd-09B" firstAttribute="leading" secondItem="c4N-Gy-iaM" secondAttribute="trailing" constant="15" id="6hh-AN-n3c"/>
-                                        <constraint firstItem="XUN-V0-3YN" firstAttribute="centerY" secondItem="8e4-df-boo" secondAttribute="centerY" id="8rg-gc-IaV"/>
-                                        <constraint firstItem="01D-iQ-Pnc" firstAttribute="bottom" secondItem="XUN-V0-3YN" secondAttribute="bottom" id="CDD-lY-Njb"/>
-                                        <constraint firstAttribute="trailing" secondItem="h5v-B1-VbW" secondAttribute="trailing" constant="10" id="DKx-iZ-PFd"/>
-                                        <constraint firstItem="01D-iQ-Pnc" firstAttribute="centerY" secondItem="b03-cT-rei" secondAttribute="centerY" id="GkA-Eq-HTt"/>
-                                        <constraint firstItem="Eu1-Nd-09B" firstAttribute="top" secondItem="8e4-df-boo" secondAttribute="topMargin" constant="12" id="K24-Sf-XuX"/>
-                                        <constraint firstItem="c4N-Gy-iaM" firstAttribute="centerY" secondItem="8e4-df-boo" secondAttribute="centerY" id="LZm-3P-ikd"/>
-                                        <constraint firstItem="Eu1-Nd-09B" firstAttribute="top" secondItem="h5v-B1-VbW" secondAttribute="top" constant="1" id="QTP-Zu-l94"/>
-                                        <constraint firstItem="Eu1-Nd-09B" firstAttribute="baseline" secondItem="b03-cT-rei" secondAttribute="baseline" constant="-1" id="U6Y-wx-gdw"/>
-                                        <constraint firstItem="01D-iQ-Pnc" firstAttribute="top" secondItem="XUN-V0-3YN" secondAttribute="top" id="Xp0-en-SdL"/>
-                                        <constraint firstItem="b03-cT-rei" firstAttribute="baseline" secondItem="Eu1-Nd-09B" secondAttribute="firstBaseline" constant="0.6666666666666643" id="bNL-85-p9L"/>
-                                        <constraint firstItem="01D-iQ-Pnc" firstAttribute="leading" secondItem="XUN-V0-3YN" secondAttribute="trailing" constant="18" id="hc7-mz-QzV"/>
-                                        <constraint firstItem="b03-cT-rei" firstAttribute="leading" secondItem="01D-iQ-Pnc" secondAttribute="trailing" id="iG5-kw-TMi"/>
-                                        <constraint firstItem="XUN-V0-3YN" firstAttribute="leading" secondItem="8e4-df-boo" secondAttribute="leading" constant="8" id="n6S-uH-8yF"/>
-                                        <constraint firstItem="h5v-B1-VbW" firstAttribute="leading" secondItem="Eu1-Nd-09B" secondAttribute="trailing" constant="20" id="p9f-wd-I6b"/>
-                                    </constraints>
-                                </tableViewCellContentView>
-                                <connections>
-                                    <outlet property="cityLabel" destination="b03-cT-rei" id="3la-pH-xTz"/>
-                                    <outlet property="locationImageView" destination="01D-iQ-Pnc" id="HCj-0e-ozH"/>
-                                    <outlet property="tempretureLabel" destination="Eu1-Nd-09B" id="aoZ-vf-QaP"/>
-                                    <outlet property="whetherImageView" destination="c4N-Gy-iaM" id="NAT-Wg-xvF"/>
-                                </connections>
-                            </tableViewCell>
-                        </prototypes>
-                        <connections>
-                            <outlet property="dataSource" destination="WUK-qi-sFg" id="ha2-Bb-MiX"/>
-                            <outlet property="delegate" destination="WUK-qi-sFg" id="afw-Rg-3ys"/>
-                        </connections>
-                    </tableView>
-                    <toolbarItems/>
-                    <navigationItem key="navigationItem" id="2TX-OC-8xm">
-                        <barButtonItem key="leftBarButtonItem" title="取消" id="zcR-JS-xfe">
-                            <connections>
-                                <segue destination="I1A-tC-S36" kind="unwind" unwindAction="cancelToCityListWithSegue:" id="JIc-8z-ILf"/>
-                            </connections>
-                        </barButtonItem>
-                        <barButtonItem key="rightBarButtonItem" title="完成" id="Jsb-2q-9XB">
-                            <connections>
-                                <action selector="saveEdit:" destination="WUK-qi-sFg" id="Iux-1T-XvV"/>
-                                <segue destination="I1A-tC-S36" kind="unwind" identifier="editCityExit" unwindAction="unwindToCityListWithSegue:" id="gdG-mK-dBc"/>
-                            </connections>
-                        </barButtonItem>
-                    </navigationItem>
-                    <simulatedToolbarMetrics key="simulatedBottomBarMetrics"/>
-                </tableViewController>
-                <placeholder placeholderIdentifier="IBFirstResponder" id="P7k-qN-hff" userLabel="First Responder" sceneMemberID="firstResponder"/>
-                <exit id="I1A-tC-S36" userLabel="Exit" sceneMemberID="exit"/>
-            </objects>
-            <point key="canvasLocation" x="2756" y="-686"/>
-        </scene>
-        <!--Edit City List Navigation Controller-->
-        <scene sceneID="jvK-eo-NL9">
-            <objects>
-                <navigationController id="fxc-oE-1sL" userLabel="Edit City List Navigation Controller" sceneMemberID="viewController">
-                    <navigationBar key="navigationBar" contentMode="scaleToFill" id="GwN-62-fUG">
-                        <rect key="frame" x="0.0" y="0.0" width="375" height="44"/>
-                        <autoresizingMask key="autoresizingMask"/>
-                    </navigationBar>
-                    <connections>
-                        <segue destination="WUK-qi-sFg" kind="relationship" relationship="rootViewController" id="d6a-JY-usN"/>
-                    </connections>
-                </navigationController>
-                <placeholder placeholderIdentifier="IBFirstResponder" id="R5w-d8-IKr" userLabel="First Responder" sceneMemberID="firstResponder"/>
-            </objects>
-            <point key="canvasLocation" x="2019" y="-687"/>
+            <point key="canvasLocation" x="-1899" y="51"/>
         </scene>
         <!--Add City View Controller-->
         <scene sceneID="htT-f0-vmn">
@@ -784,7 +652,6 @@
         <image name="background1-1" width="852" height="883"/>
         <image name="colorBar1" width="823" height="162"/>
         <image name="fengjing" width="1280" height="852"/>
-        <image name="icon_edit_delete" width="68" height="71"/>
         <image name="icon_leaf" width="128" height="128"/>
         <image name="icon_raining" width="128" height="128"/>
         <image name="icon_search" width="128" height="128"/>

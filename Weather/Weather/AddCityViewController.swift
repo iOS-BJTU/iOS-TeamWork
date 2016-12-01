@@ -83,31 +83,31 @@ class AddCityViewController: UIViewController , CLLocationManagerDelegate{
 //        theSegue.text = "Pass"
         
 //        if segue.identifier == "tianjinWeatherSegue", let destVC = segue.destination as?
-        if segue.identifier == "beijingExit", let destVC = segue.destination as? mainTableViewController{
+        if segue.identifier == "beijingExit", let destVC = segue.destination as? MainTableViewController{
             cityName = "北京"
             destVC.cityName = "北京"
         }
-        if segue.identifier == "tianjinExit", let destVC = segue.destination as? mainTableViewController{
+        if segue.identifier == "tianjinExit", let destVC = segue.destination as? MainTableViewController{
             cityName = "天津"
             destVC.cityName = "天津"
         }
-        if segue.identifier == "shanghaiExit", let destVC = segue.destination as? mainTableViewController{
+        if segue.identifier == "shanghaiExit", let destVC = segue.destination as? MainTableViewController{
             cityName = "上海"
             destVC.cityName = "上海"
         }
-        if segue.identifier == "guangzhouExit", let destVC = segue.destination as? mainTableViewController{
+        if segue.identifier == "guangzhouExit", let destVC = segue.destination as? MainTableViewController{
             cityName = "广州"
             destVC.cityName = "广州"
         }
-        if segue.identifier == "shenzhenExit", let destVC = segue.destination as? mainTableViewController{
+        if segue.identifier == "shenzhenExit", let destVC = segue.destination as? MainTableViewController{
             cityName = "深圳"
             destVC.cityName = "深圳"
         }
-        if segue.identifier == "searchCity", let destVC = segue.destination as? mainTableViewController{
+        if segue.identifier == "searchCity", let destVC = segue.destination as? MainTableViewController{
             cityName = cityTextField.text!
             destVC.cityName = cityTextField.text!
         }
-        if segue.identifier == "locateSuccess", let destVC = segue.destination as? mainTableViewController{
+        if segue.identifier == "locateSuccess", let destVC = segue.destination as? MainTableViewController{
             cityName = locationAddress
             destVC.cityName = cityName
         }

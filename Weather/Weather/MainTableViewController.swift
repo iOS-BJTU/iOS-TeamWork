@@ -15,7 +15,7 @@ let SCREEN_WIDTH = UIScreen.main.bounds.size.width
 let SCREEN_HEIGHT = UIScreen.main.bounds.size.height
 let AutoSizeScaleY = (SCREEN_HEIGHT-64)/(667-64)
 
-class mainTableViewController: UITableViewController{
+class MainTableViewController: UITableViewController{
     @IBOutlet weak var lineChartViewHigh: LineChartView!
     @IBOutlet weak var lineChartViewLow: LineChartView!
     @IBOutlet weak var hourScrollView: UIScrollView!

@@ -126,7 +126,7 @@ class CityListTableViewController: UITableViewController {
    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
         // Get the new view controller using segue.destinationViewController.
         // Pass the selected object to the new view controller.
-        if segue.identifier == "showWhetherFromCityList", let destVC = segue.destination as? mainTableViewController,
+        if segue.identifier == "showWhetherFromCityList", let destVC = segue.destination as? MainTableViewController,
             let indexPath = tableView.indexPathForSelectedRow{
             cityName = (citiesList[indexPath.row].city_name)!
             destVC.cityName = cityName
