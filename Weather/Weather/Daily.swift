@@ -16,7 +16,7 @@ class Daily: NSObject {
         if getData != nil {
             return getData
         } else {
-            fetchAsync() //start asynchronous image fetching from the Internet
+            fetchAsync()
             return getData
         }
     }
@@ -25,16 +25,16 @@ class Daily: NSObject {
     init(_ name: String, _ url: String) {
         interName = name
         weatherURL = URL(string: url)
-        print("init image \(interName)")
+        print("init \(interName)")
         super.init()
     }
     func fetchAsync() {
         if !isFetching, let url = weatherURL {
-            print("start feteching image \(self.interName)")
+            print("start getting daily \(self.interName)")
             isFetching = true
             let downloadTask = URLSession.shared.downloadTask(with: url,completionHandler: {
                 [weak self] url, response, error in if let error = error {
-                    print("error downloading image \(self?.interName) error: \(error)")
+                    print("error getting daily \(self?.interName) error: \(error)")
                     
                     DispatchQueue.main.async {
                         if let strongSelf = self {
@@ -43,10 +43,8 @@ class Daily: NSObject {
                     }
                 } else if let httpResponse = response as? HTTPURLResponse, httpResponse.statusCode == 200, let url = url {
                     do {
-                        print(url)
-                        //                        let getData = try Data(contentsOf: url)
                         let getData = try NSData(contentsOf: url, options: NSData.ReadingOptions.uncached)
-                        print("received data for image \(self?.interName)")
+                        print("receivedgetting daily daily \(self?.interName)")
                         DispatchQueue.main.async {
                             if let strongSelf = self {
                                 strongSelf.getData = getData as Data
@@ -56,13 +54,13 @@ class Daily: NSObject {
                             }
                         }
                     } catch {
-                        print("error fetching data for image \(self?.interName) error: \(error)")
+                        print("error getting daily \(self?.interName) error: \(error)")
                         DispatchQueue.main.async {
                             self?.isFetching = false
                         }
                     }
                 } else {
-                    print("failed downloading image \(self?.interName) error: \(response)")
+                    print("failed getting daily \(self?.interName) error: \(response)")
                     DispatchQueue.main.async { if let strongSelf = self {
                         strongSelf.isFetching = false
                         }

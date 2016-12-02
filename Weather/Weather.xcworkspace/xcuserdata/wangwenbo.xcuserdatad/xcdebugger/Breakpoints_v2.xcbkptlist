@@ -31,7 +31,7 @@
             endingColumnNumber = "9223372036854775807"
             startingLineNumber = "266"
             endingLineNumber = "266"
-            landmarkName = "getNow(notification:)"
+            landmarkName = "getDaily(notification:)"
             landmarkType = "7">
          </BreakpointContent>
       </BreakpointProxy>
